@@ -3,6 +3,9 @@ package com.folkislove.love.service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.folkislove.love.exception.InvalidCredentialsException;
+import com.folkislove.love.exception.UserAlreadyExistsException;
+import com.folkislove.love.exception.UserNotFoundException;
 import com.folkislove.love.model.User;
 import com.folkislove.love.model.User.Role;
 import com.folkislove.love.repository.UserRepository;
@@ -22,10 +25,10 @@ public class AuthService {
 
     public String login(String username, String password) {
         User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new UserNotFoundException(username));
 
         if (!passwordEncoder.matches(password, user.getPasswordHash())) {
-            throw new RuntimeException("Invalid credentials");
+            throw new InvalidCredentialsException();
         }
 
         return jwtService.generateToken(user.getUsername());
@@ -33,7 +36,7 @@ public class AuthService {
 
     public User register(String username, String password) {
         if (userRepository.findByUsername(username).isPresent()) {
-            throw new RuntimeException("Username already exists");
+            throw new UserAlreadyExistsException(username);
         }
 
         User user = new User();

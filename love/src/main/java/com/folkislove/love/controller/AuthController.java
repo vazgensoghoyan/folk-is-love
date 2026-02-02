@@ -14,6 +14,7 @@ import com.folkislove.love.dto.UserResponse;
 import com.folkislove.love.model.User;
 import com.folkislove.love.service.AuthService;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @RestController
@@ -24,13 +25,13 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String,String>> login(@RequestBody AuthRequest request) {
+    public ResponseEntity<Map<String,String>> login(@Valid @RequestBody AuthRequest request) {
         String token = authService.login(request.getUsername(), request.getPassword());
         return ResponseEntity.ok(Map.of("token", token));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponse> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
         User user = authService.register(request.getUsername(), request.getPassword());
         return ResponseEntity.ok(new UserResponse(user.getUsername()));
     }
