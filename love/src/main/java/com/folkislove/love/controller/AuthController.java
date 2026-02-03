@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.folkislove.love.dto.AuthRequest;
 import com.folkislove.love.dto.RegisterRequest;
 import com.folkislove.love.dto.UserResponse;
+import com.folkislove.love.mapper.UserMapper;
 import com.folkislove.love.model.User;
 import com.folkislove.love.service.AuthService;
 
@@ -23,6 +24,7 @@ import lombok.AllArgsConstructor;
 public class AuthController {
 
     private final AuthService authService;
+    private final UserMapper userMapper;
 
     @PostMapping("/login")
     public ResponseEntity<Map<String,String>> login(@Valid @RequestBody AuthRequest request) {
@@ -33,7 +35,6 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
         User user = authService.register(request.getUsername(), request.getPassword());
-        var response = new UserResponse(user.getUsername(), user.getRole());
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(userMapper.toDto(user));
     }
 }

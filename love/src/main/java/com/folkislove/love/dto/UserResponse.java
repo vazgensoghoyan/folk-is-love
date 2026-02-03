@@ -1,15 +1,17 @@
 package com.folkislove.love.dto;
 
+import java.util.List;
+
 import com.folkislove.love.model.User.Role;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
-@AllArgsConstructor
+@Data
 public class UserResponse {
     private String username;
+    private String email;
+    private String bio;
     private Role role;
+    private Boolean banned;
+    private List<String> interests;
 }

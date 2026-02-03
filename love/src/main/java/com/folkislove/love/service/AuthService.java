@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import com.folkislove.love.model.User;
 import com.folkislove.love.model.User.Role;
 import com.folkislove.love.repository.UserRepository;
-import com.folkislove.love.security.UserCredentialsValidator;
+import com.folkislove.love.util.UserCredentialsValidator;
 
 import lombok.AllArgsConstructor;
 

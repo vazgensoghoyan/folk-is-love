@@ -1,4 +1,4 @@
-package com.folkislove.love.security;
+package com.folkislove.love.util;
 
 import org.springframework.stereotype.Component;
 
