@@ -4,45 +4,47 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.folkislove.love.exception.InvalidCredentialsException;
-import com.folkislove.love.exception.UserAlreadyExistsException;
-import com.folkislove.love.exception.UserNotFoundException;
+import com.folkislove.love.exception.UserBannedException;
 import com.folkislove.love.model.User;
 import com.folkislove.love.model.User.Role;
 import com.folkislove.love.repository.UserRepository;
+import com.folkislove.love.security.UserCredentialsValidator;
+
+import lombok.AllArgsConstructor;
 
 @Service
+@AllArgsConstructor
 public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
-    }
+    private final UserCredentialsValidator credentialsValidator;
 
     public String login(String username, String password) {
         User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new UserNotFoundException(username));
+                    .orElseThrow(() -> new InvalidCredentialsException());
+
+        if (user.getBanned()) {
+            throw new UserBannedException(username);
+        }
 
         if (!passwordEncoder.matches(password, user.getPasswordHash())) {
             throw new InvalidCredentialsException();
         }
 
-        return jwtService.generateToken(user.getUsername());
+        return jwtService.generateToken(user.getUsername(), user.getRole().name());
     }
 
     public User register(String username, String password) {
-        if (userRepository.findByUsername(username).isPresent()) {
-            throw new UserAlreadyExistsException(username);
-        }
+        credentialsValidator.validateUsername(username);
+        credentialsValidator.validatePassword(password);
 
-        User user = new User();
-        user.setUsername(username);
-        user.setPasswordHash(passwordEncoder.encode(password));
-        user.setRole(Role.USER);
+        User user = User.builder()
+            .username(username)
+            .passwordHash(passwordEncoder.encode(password))
+            .role(Role.USER)
+            .build();
 
         return userRepository.save(user);
     }

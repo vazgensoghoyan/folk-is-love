@@ -1,5 +1,6 @@
 package com.folkislove.love.service;
 
+import com.folkislove.love.exception.UserBannedException;
 import com.folkislove.love.model.User;
 import com.folkislove.love.repository.UserRepository;
 
@@ -24,6 +25,11 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
             .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        if (user.getBanned()) {
+            throw new UserBannedException(username);
+        }
+
         return new org.springframework.security.core.userdetails.User(
             user.getUsername(),
             user.getPasswordHash(),
