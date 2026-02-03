@@ -38,12 +38,7 @@ class AuthServiceTest {
 
         @Test
         void loginWithValidCredentialsShouldReturnToken() {
-            User user = User.builder()
-                    .username("user1")
-                    .passwordHash("encodedPass")
-                    .banned(false)
-                    .role(Role.USER)
-                    .build();
+            User user = createActiveUser(false);
 
             when(userRepository.findByUsername("user1")).thenReturn(Optional.of(user));
             when(passwordEncoder.matches("pass", "encodedPass")).thenReturn(true);
@@ -56,28 +51,37 @@ class AuthServiceTest {
 
         @Test
         void loginWithWrongUsernameShouldThrow() {
-            when(userRepository.findByUsername("unknown")).thenReturn(Optional.empty());
+            when(userRepository.findByUsername("unknown"))
+                .thenReturn(Optional.empty());
 
             RuntimeException ex = assertThrows(RuntimeException.class,
                     () -> authService.login("unknown", "pass"));
+
             assertEquals("Invalid username", ex.getMessage());
         }
 
         @Test
         void loginWithBannedUserShouldThrow() {
-            User user = User.builder().username("user1").banned(true).build();
-            when(userRepository.findByUsername("user1")).thenReturn(Optional.of(user));
+            User user = createActiveUser(true);
+
+            when(userRepository.findByUsername("user1"))
+                .thenReturn(Optional.of(user));
 
             RuntimeException ex = assertThrows(RuntimeException.class,
                     () -> authService.login("user1", "pass"));
+
             assertEquals("User is banned", ex.getMessage());
         }
 
         @Test
         void loginWithWrongPasswordShouldThrow() {
-            User user = User.builder().username("user1").passwordHash("encodedPass").banned(false).build();
-            when(userRepository.findByUsername("user1")).thenReturn(Optional.of(user));
-            when(passwordEncoder.matches("wrong", "encodedPass")).thenReturn(false);
+            User user = createActiveUser(false);
+
+            when(userRepository.findByUsername("user1"))
+                .thenReturn(Optional.of(user));
+
+            when(passwordEncoder.matches("wrong", "encodedPass"))
+                .thenReturn(false);
 
             RuntimeException ex = assertThrows(RuntimeException.class,
                     () -> authService.login("user1", "wrong"));
@@ -91,9 +95,11 @@ class AuthServiceTest {
 
         @Test
         void registerShouldValidateAndSaveUser() {
-            when(passwordEncoder.encode("pass123!")).thenReturn("encodedPass");
+            when(passwordEncoder.encode("pass123!"))
+                .thenReturn("encodedPass");
 
-            User savedUser = User.builder().username("user1").passwordHash("encodedPass").role(Role.USER).build();
+            User savedUser = createActiveUser(false);
+
             when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
             User result = authService.register("user1", "pass123!");
@@ -117,5 +123,13 @@ class AuthServiceTest {
             assertEquals("Invalid username", ex.getMessage());
         }
 
+    }
+
+    private User createActiveUser(boolean banned) {
+        return User.builder()
+            .username("user1")
+            .passwordHash("encodedPass")
+            .banned(banned)
+            .build();
     }
 }
