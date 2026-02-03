@@ -3,8 +3,6 @@ package com.folkislove.love.service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.folkislove.love.exception.InvalidCredentialsException;
-import com.folkislove.love.exception.UserBannedException;
 import com.folkislove.love.model.User;
 import com.folkislove.love.model.User.Role;
 import com.folkislove.love.repository.UserRepository;
@@ -23,14 +21,14 @@ public class AuthService {
 
     public String login(String username, String password) {
         User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new InvalidCredentialsException());
+                    .orElseThrow(() -> new RuntimeException("Invalid username"));
 
         if (user.getBanned()) {
-            throw new UserBannedException(username);
+            throw new RuntimeException("User is banned");
         }
 
         if (!passwordEncoder.matches(password, user.getPasswordHash())) {
-            throw new InvalidCredentialsException();
+            throw new RuntimeException("Invalid password");
         }
 
         return jwtService.generateToken(user.getUsername(), user.getRole().name());

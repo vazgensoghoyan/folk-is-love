@@ -2,9 +2,13 @@ package com.folkislove.love.model;
 
 import lombok.*;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "users")
@@ -20,6 +24,10 @@ public class User {
 
     @Column(nullable = false, unique = true, length = 50)
     private String username;
+
+    @Email
+    @Column(unique = true, length = 100)
+    private String email;
 
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
@@ -40,6 +48,7 @@ public class User {
     @Column(nullable = false)
     private Boolean banned = false;
 
+    @JsonIgnore
     @ManyToMany
     @JoinTable(
         name = "user_tags",

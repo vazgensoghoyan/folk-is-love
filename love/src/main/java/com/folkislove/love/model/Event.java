@@ -2,9 +2,13 @@ package com.folkislove.love.model;
 
 import lombok.*;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "events")
@@ -51,6 +55,8 @@ public class Event {
     @Column(nullable = false)
     private Boolean deleted = false;
 
+    @JsonIgnore
+    @NotEmpty(message = "Event must have at least one tag")
     @ManyToMany
     @JoinTable(
         name = "event_tags",

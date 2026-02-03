@@ -1,25 +1,23 @@
 package com.folkislove.love.security;
 
 import org.springframework.stereotype.Component;
-import com.folkislove.love.exception.InvalidCredentialsException;
-import com.folkislove.love.exception.WeakPasswordException;
 
 @Component
 public class UserCredentialsValidator {
 
     public void validateUsername(String username) {
         if (username == null || username.length() < 3 || username.length() > 50) {
-            throw new InvalidCredentialsException();
+            throw new RuntimeException("Username must be between 3 and 50 characters long");
         }
     }
 
     public void validatePassword(String password) {
         if (password == null || password.length() < 10) {
-            throw new WeakPasswordException("Password must be at least 10 characters long");
+            throw new RuntimeException("Password must be at least 10 characters long");
         }
 
         if (password.contains(" ")) {
-            throw new WeakPasswordException("Password must not contain spaces");
+            throw new RuntimeException("Password must not contain spaces");
         }
 
         boolean hasLower = false;
@@ -35,16 +33,16 @@ public class UserCredentialsValidator {
         }
 
         if (!hasLower) {
-            throw new WeakPasswordException("Password must contain at least one lowercase letter");
+            throw new RuntimeException("Password must contain at least one lowercase letter");
         }
         if (!hasUpper) {
-            throw new WeakPasswordException("Password must contain at least one uppercase letter");
+            throw new RuntimeException("Password must contain at least one uppercase letter");
         }
         if (!hasDigit) {
-            throw new WeakPasswordException("Password must contain at least one digit");
+            throw new RuntimeException("Password must contain at least one digit");
         }
         if (!hasSpecial) {
-            throw new WeakPasswordException("Password must contain at least one special character");
+            throw new RuntimeException("Password must contain at least one special character");
         }
     }
 }
