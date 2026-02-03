@@ -43,6 +43,14 @@ public class Event {
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
+    @Builder.Default
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean deleted = false;
+
     @ManyToMany
     @JoinTable(
         name = "event_tags",

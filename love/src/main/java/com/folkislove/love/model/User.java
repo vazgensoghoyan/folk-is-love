@@ -36,6 +36,10 @@ public class User {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean banned = false;
+
     @ManyToMany
     @JoinTable(
         name = "user_tags",

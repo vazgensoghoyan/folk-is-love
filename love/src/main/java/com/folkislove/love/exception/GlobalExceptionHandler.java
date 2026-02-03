@@ -21,6 +21,34 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errors);
     }
 
+    // Слабый пароль
+    @ExceptionHandler(WeakPasswordException.class)
+    public ResponseEntity<Map<String, String>> handleWeakPassword(WeakPasswordException ex) {
+        return ResponseEntity.badRequest()
+                            .body(Map.of("error", ex.getMessage()));
+    }
+
+    // В случае существования пользователя при регистрации
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<Map<String, String>> handleUserAlreadyExists(UserAlreadyExistsException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                            .body(Map.of("error", ex.getMessage()));
+    }
+
+    // Некорректные данные при входе
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidCredentials(InvalidCredentialsException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                            .body(Map.of("error", ex.getMessage()));
+    }
+
+    // Пользователь не найден
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleUserNotFound(UserNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body(Map.of("error", ex.getMessage()));
+    }
+
     // Для RuntimeException, например, если пароль пустой
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, String>> handleRuntimeException(RuntimeException ex) {
@@ -29,31 +57,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(error);
     }
 
-    // В случае существования пользователя при регистрации
-    @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<Map<String, String>> handleUserAlreadyExists(UserAlreadyExistsException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                             .body(Map.of("error", ex.getMessage()));
-    }
-
-    // Некорректные данные при входе
-    @ExceptionHandler(InvalidCredentialsException.class)
-    public ResponseEntity<Map<String, String>> handleInvalidCredentials(InvalidCredentialsException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                             .body(Map.of("error", ex.getMessage()));
-    }
-
-    // Пользователь не найден
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleUserNotFound(UserNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                             .body(Map.of("error", ex.getMessage()));
-    }
-
     // Общий обработчик для всех остальных исключений
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleOtherExceptions(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                             .body(Map.of("error", "Internal server error"));
+        return ResponseEntity.internalServerError()
+                            .body(Map.of("error", "An unexpected error occurred"));
     }
 }
