@@ -22,4 +22,5 @@ jobs:
           cache: maven
 
       - name: Run tests
+        working-directory: love
         run: mvn -B clean test
