@@ -4,6 +4,9 @@ import com.folkislove.love.dto.UserResponse;
 import com.folkislove.love.model.Tag;
 import com.folkislove.love.model.User;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.mapstruct.factory.Mappers;
 
 import java.util.Set;
 
@@ -16,8 +19,7 @@ class UserMapperTest {
     private static final String TAG1_NAME = "Armenian";
     private static final String TAG2_NAME = "Slavic";
 
-    // UserMapperImpl снегерирован с помощью MapStruct
-    private final UserMapper mapper = new UserMapperImpl();
+    private final UserMapper mapper = Mappers.getMapper(UserMapper.class);
 
     @Test
     void shouldMapUserToUserResponse() {
@@ -36,27 +38,18 @@ class UserMapperTest {
         assertThat(dto).isNotNull();
         assertThat(dto.getUsername()).isEqualTo(USERNAME);
         assertThat(dto.getBio()).isEqualTo(BIO_TEXT);
-        assertThat(dto.getInterests()).containsExactlyInAnyOrder(TAG1_NAME, TAG2_NAME);
+        assertThat(dto.getInterests())
+                .hasSize(2)
+                .containsExactlyInAnyOrder(TAG1_NAME, TAG2_NAME);
     }
 
-    @Test
-    void shouldReturnEmptyListWhenInterestsIsNull() {
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldReturnEmptyListWhenInterestsNullOrEmpty(Set<Tag> interests) {
         User user = User.builder()
                 .username(USERNAME)
                 .bio(BIO_TEXT)
-                .interests(null)
-                .build();
-
-        UserResponse dto = mapper.toDto(user);
-
-        assertThat(dto.getInterests()).isEmpty();
-    }
-
-    @Test
-    void shouldReturnEmptyListWhenInterestsIsEmpty() {
-        User user = User.builder()
-                .username(USERNAME)
-                .interests(Set.of())
+                .interests(interests)
                 .build();
 
         UserResponse dto = mapper.toDto(user);
@@ -79,4 +72,9 @@ class UserMapperTest {
         assertThat(dto.getInterests()).isEmpty();
     }
 
+    @Test
+    void shouldReturnNullWhenUserIsNull() {
+        UserResponse dto = mapper.toDto(null);
+        assertThat(dto).isNull();
+    }
 }
