@@ -2,7 +2,6 @@ package com.folkislove.love.model;
 
 import lombok.*;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;

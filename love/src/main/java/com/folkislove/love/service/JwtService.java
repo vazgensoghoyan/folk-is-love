@@ -52,7 +52,7 @@ public class JwtService {
 
     public boolean isTokenValid(String token, String username) {
         final String tokenUsername = extractUsername(token);
-        return (tokenUsername.equals(username)) && !isTokenExpired(token);
+        return tokenUsername.equals(username) && !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {
@@ -66,6 +66,9 @@ public class JwtService {
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
+        } catch (ExpiredJwtException e) {
+            // даже если просрочен, возвращаем его claims
+            return e.getClaims();
         } catch (JwtException e) {
             throw new RuntimeException("Invalid JWT token", e);
         }
