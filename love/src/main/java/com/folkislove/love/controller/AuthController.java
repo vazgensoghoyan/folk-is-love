@@ -28,13 +28,20 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<Map<String,String>> login(@Valid @RequestBody AuthRequest request) {
-        String token = authService.login(request.getUsername(), request.getPassword());
+        String token = authService.login(
+            request.getUsername(), 
+            request.getPassword()
+        );
         return ResponseEntity.ok(Map.of("token", token));
     }
 
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
-        User user = authService.register(request.getUsername(), request.getPassword());
+        User user = authService.register(
+            request.getUsername(),
+            request.getEmail(),
+            request.getPassword()
+        );
         return ResponseEntity.ok(userMapper.toDto(user));
     }
 }

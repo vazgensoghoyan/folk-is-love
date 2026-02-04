@@ -23,10 +23,6 @@ public class AuthService {
         User user = userRepository.findByUsername(username)
                     .orElseThrow(() -> new RuntimeException("Invalid username"));
 
-        if (user.getBanned()) {
-            throw new RuntimeException("User is banned");
-        }
-
         if (!passwordEncoder.matches(password, user.getPasswordHash())) {
             throw new RuntimeException("Invalid password");
         }
@@ -34,12 +30,13 @@ public class AuthService {
         return jwtService.generateToken(user.getUsername(), user.getRole().name());
     }
 
-    public User register(String username, String password) {
+    public User register(String username, String email, String password) {
         credentialsValidator.validateUsername(username);
         credentialsValidator.validatePassword(password);
 
         User user = User.builder()
             .username(username)
+            .email(email)
             .passwordHash(passwordEncoder.encode(password))
             .role(Role.USER)
             .build();

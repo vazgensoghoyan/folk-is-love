@@ -12,9 +12,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class AuthServiceTest {
+
+    private static final String USERNAME = "user1";
+    private static final String EMAIL = "email@example.com";
+    private static final String PASSWORD = "pass";
+    private static final String ENCODED_PASSWORD = "encodedPassword";
+    private static final String JWT_TOKEN = "jwt-token";
+    private static final String INVALID_USERNAME = "unknown";
+    private static final String INVALID_USERNAME_MSG = "Invalid username";
+    private static final String INVALID_PASSWORD_MSG = "Invalid password";
+    private static final String REGISTER_PASSWORD = "pass123!";
+    private static final String INVALID_REGISTER_USERNAME = "bad_user";
+    private static final String WRONG_PASSWORD = "wrong";
 
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
@@ -38,54 +51,41 @@ class AuthServiceTest {
 
         @Test
         void loginWithValidCredentialsShouldReturnToken() {
-            User user = createActiveUser(false);
+            User user = createActiveUser();
 
-            when(userRepository.findByUsername("user1")).thenReturn(Optional.of(user));
-            when(passwordEncoder.matches("pass", "encodedPass")).thenReturn(true);
-            when(jwtService.generateToken("user1", "USER")).thenReturn("jwt-token");
+            when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.of(user));
+            when(passwordEncoder.matches(PASSWORD, ENCODED_PASSWORD)).thenReturn(true);
+            when(jwtService.generateToken(USERNAME, Role.USER.name())).thenReturn(JWT_TOKEN);
 
-            String token = authService.login("user1", "pass");
+            String token = authService.login(USERNAME, PASSWORD);
 
-            assertEquals("jwt-token", token);
+            assertEquals(JWT_TOKEN, token);
         }
 
         @Test
         void loginWithWrongUsernameShouldThrow() {
-            when(userRepository.findByUsername("unknown"))
+            when(userRepository.findByUsername(INVALID_USERNAME))
                 .thenReturn(Optional.empty());
 
             RuntimeException ex = assertThrows(RuntimeException.class,
-                    () -> authService.login("unknown", "pass"));
+                    () -> authService.login(INVALID_USERNAME, PASSWORD));
 
-            assertEquals("Invalid username", ex.getMessage());
-        }
-
-        @Test
-        void loginWithBannedUserShouldThrow() {
-            User user = createActiveUser(true);
-
-            when(userRepository.findByUsername("user1"))
-                .thenReturn(Optional.of(user));
-
-            RuntimeException ex = assertThrows(RuntimeException.class,
-                    () -> authService.login("user1", "pass"));
-
-            assertEquals("User is banned", ex.getMessage());
+            assertEquals(INVALID_USERNAME_MSG, ex.getMessage());
         }
 
         @Test
         void loginWithWrongPasswordShouldThrow() {
-            User user = createActiveUser(false);
+            User user = createActiveUser();
 
-            when(userRepository.findByUsername("user1"))
+            when(userRepository.findByUsername(USERNAME))
                 .thenReturn(Optional.of(user));
 
-            when(passwordEncoder.matches("wrong", "encodedPass"))
+            when(passwordEncoder.matches(WRONG_PASSWORD, ENCODED_PASSWORD))
                 .thenReturn(false);
 
             RuntimeException ex = assertThrows(RuntimeException.class,
-                    () -> authService.login("user1", "wrong"));
-            assertEquals("Invalid password", ex.getMessage());
+                    () -> authService.login(USERNAME, WRONG_PASSWORD));
+            assertEquals(INVALID_PASSWORD_MSG, ex.getMessage());
         }
 
     }
@@ -95,41 +95,48 @@ class AuthServiceTest {
 
         @Test
         void registerShouldValidateAndSaveUser() {
-            when(passwordEncoder.encode("pass123!"))
-                .thenReturn("encodedPass");
+            when(passwordEncoder.encode(REGISTER_PASSWORD))
+                .thenReturn(ENCODED_PASSWORD);
 
-            User savedUser = createActiveUser(false);
+            User savedUser = createActiveUser();
 
             when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
-            User result = authService.register("user1", "pass123!");
+            User result = authService.register(
+                USERNAME, EMAIL, REGISTER_PASSWORD
+            );
 
-            verify(credentialsValidator).validateUsername("user1");
-            verify(credentialsValidator).validatePassword("pass123!");
+            verify(credentialsValidator).validateUsername(USERNAME);
+            verify(credentialsValidator).validatePassword(REGISTER_PASSWORD);
             verify(userRepository).save(any(User.class));
 
-            assertEquals("user1", result.getUsername());
-            assertEquals("encodedPass", result.getPasswordHash());
+            assertEquals(USERNAME, result.getUsername());
+            assertEquals(ENCODED_PASSWORD, result.getPasswordHash());
             assertEquals(Role.USER, result.getRole());
         }
 
         @Test
         void registerShouldThrowWhenUsernameInvalid() {
-            doThrow(new IllegalArgumentException("Invalid username"))
-                    .when(credentialsValidator).validateUsername("bad_user");
+            doThrow(new IllegalArgumentException(INVALID_USERNAME_MSG))
+                    .when(credentialsValidator).validateUsername(INVALID_REGISTER_USERNAME);
 
             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                    () -> authService.register("bad_user", "pass123!"));
-            assertEquals("Invalid username", ex.getMessage());
+                    () -> authService.register(
+                            INVALID_REGISTER_USERNAME,
+                            EMAIL,
+                            REGISTER_PASSWORD
+                        ));
+
+            assertEquals(INVALID_USERNAME_MSG, ex.getMessage());
         }
 
     }
 
-    private User createActiveUser(boolean banned) {
+    private User createActiveUser() {
         return User.builder()
-            .username("user1")
-            .passwordHash("encodedPass")
-            .banned(banned)
+            .username(USERNAME)
+            .email(EMAIL)
+            .passwordHash(ENCODED_PASSWORD)
             .build();
     }
 }

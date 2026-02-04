@@ -12,6 +12,5 @@ public class UserResponse {
     private String email;
     private String bio;
     private Role role;
-    private Boolean banned;
     private List<String> interests;
 }
