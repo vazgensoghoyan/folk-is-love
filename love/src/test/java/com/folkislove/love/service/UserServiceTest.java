@@ -220,4 +220,84 @@ class UserServiceTest {
 
     }
 
+    @Nested
+    class DeleteUserTests {
+
+        @Test
+        void shouldDeleteUserIfAdmin() {
+            var userToDelete = User.builder().id(1L).username("user1").build();
+
+            when(currentUserService.isAdmin()).thenReturn(true);
+            when(userRepository.findById(1L)).thenReturn(Optional.of(userToDelete));
+
+            userService.deleteUser(1L);
+
+            verify(userRepository, times(1)).delete(userToDelete);
+        }
+
+        @Test
+        void shouldThrowIfUserNotFound() {
+            when(currentUserService.isAdmin()).thenReturn(true);
+            when(userRepository.findById(1L)).thenReturn(Optional.empty());
+
+            RuntimeException ex = assertThrows(RuntimeException.class,
+                    () -> userService.deleteUser(1L));
+
+            assertEquals("User not found", ex.getMessage());
+        }
+
+        @Test
+        void shouldThrowIfNotAdmin() {
+            when(currentUserService.isAdmin()).thenReturn(false);
+
+            RuntimeException ex = assertThrows(RuntimeException.class,
+                    () -> userService.deleteUser(1L));
+
+            assertEquals("You don't have permission to access this resource", ex.getMessage());
+            verify(userRepository, never()).delete(any());
+        }
+
+    }
+
+    @Nested
+    class AddInterestEdgeCasesTests {
+
+        @Test
+        void shouldDoNothingIfUserAlreadyHasTag() {
+            var tag = Tag.builder().id(1L).build();
+            var user = User.builder().interests(new HashSet<>(Set.of(tag))).build();
+
+            when(currentUserService.getCurrentUser()).thenReturn(user);
+            when(tagRepository.findById(1L)).thenReturn(Optional.of(tag));
+
+            userService.addInterest(1L);
+
+            // Проверяем, что тег остался один и сохранение вызвано
+            assertEquals(1, user.getInterests().size());
+            assertTrue(user.getInterests().contains(tag));
+            verify(userRepository, times(1)).save(user);
+        }
+
+    }
+
+    @Nested
+    class RemoveInterestEdgeCasesTests {
+
+        @Test
+        void shouldDoNothingIfUserDoesNotHaveTag() {
+            var tag = Tag.builder().id(1L).build();
+            var user = User.builder().interests(new HashSet<>()).build();
+
+            when(currentUserService.getCurrentUser()).thenReturn(user);
+            when(tagRepository.findById(1L)).thenReturn(Optional.of(tag));
+
+            userService.removeInterest(1L);
+
+            // Проверяем, что список интересов по-прежнему пуст
+            assertTrue(user.getInterests().isEmpty());
+            verify(userRepository, times(1)).save(user);
+        }
+
+    }
+
 }

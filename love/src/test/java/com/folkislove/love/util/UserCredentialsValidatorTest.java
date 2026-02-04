@@ -20,7 +20,7 @@ class UserCredentialsValidatorTest {
 
         @Test
         void validUsernameShouldNotThrow() {
-            assertDoesNotThrow(() -> validator.validateUsername("validUser"));
+            assertDoesNotThrow(() -> validator.validateUsername("valid_user123"));
         }
 
         @Test
@@ -45,6 +45,57 @@ class UserCredentialsValidatorTest {
             assertEquals("Username must be between 3 and 50 characters long", ex.getMessage());
         }
 
+        @Test
+        void usernameWithInvalidCharactersShouldThrow() {
+            RuntimeException ex = assertThrows(RuntimeException.class,
+                    () -> validator.validateUsername("InvalidUser!"));
+            assertEquals("Username must be 3-50 characters: lowercase letters, digits, '_' or '-' only", ex.getMessage());
+        }
+
+        @Test
+        void usernameWithUppercaseLettersShouldThrow() {
+            RuntimeException ex = assertThrows(RuntimeException.class,
+                    () -> validator.validateUsername("UserName"));
+            assertEquals("Username must be 3-50 characters: lowercase letters, digits, '_' or '-' only", ex.getMessage());
+        }
+
+    }
+
+    @Nested
+    class EmailValidationTests {
+
+        @Test
+        void validEmailShouldNotThrow() {
+            assertDoesNotThrow(() -> validator.validateEmail("user@example.com"));
+        }
+
+        @Test
+        void nullEmailShouldThrow() {
+            RuntimeException ex = assertThrows(RuntimeException.class,
+                    () -> validator.validateEmail(null));
+            assertEquals("Email must not be empty", ex.getMessage());
+        }
+
+        @Test
+        void blankEmailShouldThrow() {
+            RuntimeException ex = assertThrows(RuntimeException.class,
+                    () -> validator.validateEmail("   "));
+            assertEquals("Email must not be empty", ex.getMessage());
+        }
+
+        @Test
+        void invalidEmailFormatShouldThrow() {
+            RuntimeException ex = assertThrows(RuntimeException.class,
+                    () -> validator.validateEmail("invalid-email"));
+            assertEquals("Email is not valid", ex.getMessage());
+        }
+
+        @Test
+        void emailWithInvalidDomainShouldThrow() {
+            RuntimeException ex = assertThrows(RuntimeException.class,
+                    () -> validator.validateEmail("user@domain"));
+            assertEquals("Email is not valid", ex.getMessage());
+        }
     }
 
     @Nested

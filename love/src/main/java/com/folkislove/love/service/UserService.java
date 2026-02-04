@@ -63,12 +63,29 @@ public class UserService {
     // Получение всех пользователей (только админ)
     @Transactional(readOnly = true)
     public List<UserResponse> getAllUsers(Pageable pageable) {
-        if (!currentUserService.isAdmin()) {
-            throw new RuntimeException("You don't have permission to access this resource");
-        }
+        checkCurrentIsAdmin();
+
         Page<User> usersPage = userRepository.findAll(pageable);
         return usersPage.stream()
                 .map(userMapper::toDto)
                 .collect(Collectors.toList());
     }
+
+    // Удаление пользователя (только админ)
+    @Transactional
+    public void deleteUser(Long userId) {
+        checkCurrentIsAdmin();
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        userRepository.delete(user);
+    }
+
+    private void checkCurrentIsAdmin() {
+        if (!currentUserService.isAdmin()) {
+            throw new RuntimeException("You don't have permission to access this resource");
+        }
+    }
+
 }
