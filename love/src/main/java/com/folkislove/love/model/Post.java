@@ -29,7 +29,7 @@ public class Post {
     private String title;
 
     @Column(columnDefinition = "TEXT", nullable = false)
-    private String description;
+    private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)

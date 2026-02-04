@@ -35,7 +35,7 @@ public class User {
 
     @Email
     @Size(max = 100)
-    @Column(unique = true, length = 100, nullable = false)
+    @Column(nullable = false, unique = true, length = 100)
     private String email;
 
     @Column(name = "password_hash", nullable = false)
