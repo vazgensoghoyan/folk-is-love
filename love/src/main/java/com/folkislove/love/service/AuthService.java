@@ -32,6 +32,7 @@ public class AuthService {
 
     public User register(String username, String email, String password) {
         credentialsValidator.validateUsername(username);
+        credentialsValidator.validateEmail(email);
         credentialsValidator.validatePassword(password);
 
         User user = User.builder()

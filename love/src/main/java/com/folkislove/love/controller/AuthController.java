@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.folkislove.love.dto.AuthRequest;
+import com.folkislove.love.dto.AuthResponse;
 import com.folkislove.love.dto.RegisterRequest;
 import com.folkislove.love.dto.UserResponse;
 import com.folkislove.love.mapper.UserMapper;
@@ -27,12 +28,13 @@ public class AuthController {
     private final UserMapper userMapper;
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String,String>> login(@Valid @RequestBody AuthRequest request) {
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest request) {
         String token = authService.login(
             request.getUsername(), 
             request.getPassword()
         );
-        return ResponseEntity.ok(Map.of("token", token));
+        var response = AuthResponse.builder().token(token).build();
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/register")
