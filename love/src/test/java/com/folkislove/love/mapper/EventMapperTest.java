@@ -29,20 +29,15 @@ class EventMapperTest {
     private final EventMapper mapper = Mappers.getMapper(EventMapper.class);
 
     @Test
-    void shouldMapEventToEventResponse() {
-        User author = User.builder()
-                .id(1L)
-                .username(USERNAME)
-                .build();
-
+    void shouldMapAllFields() {
+        User author = User.builder().id(1L).username(USERNAME).build();
         Tag tag1 = Tag.builder().id(1L).name(TAG1).build();
         Tag tag2 = Tag.builder().id(2L).name(TAG2).build();
 
         LocalDateTime dateTime = LocalDateTime.now();
-        LocalDateTime createdAt = LocalDateTime.now().minusDays(1);
+        LocalDateTime createdAt = dateTime.minusDays(1);
 
         Event event = Event.builder()
-                .id(10L)
                 .title(TITLE)
                 .description(DESCRIPTION)
                 .dateTime(dateTime)
@@ -60,49 +55,43 @@ class EventMapperTest {
         assertThat(dto).isNotNull();
         assertThat(dto.getTitle()).isEqualTo(TITLE);
         assertThat(dto.getDescription()).isEqualTo(DESCRIPTION);
+        assertThat(dto.getDateTime()).isEqualTo(dateTime);
         assertThat(dto.getCity()).isEqualTo(CITY);
         assertThat(dto.getCountry()).isEqualTo(COUNTRY);
         assertThat(dto.getVenue()).isEqualTo(VENUE);
         assertThat(dto.getLink()).isEqualTo(LINK);
-        assertThat(dto.getAuthorUsername()).isEqualTo(USERNAME);
-        assertThat(dto.getDateTime()).isEqualTo(dateTime);
         assertThat(dto.getCreatedAt()).isEqualTo(createdAt);
-
-        assertThat(dto.getTags())
-                .hasSize(2)
-                .containsExactlyInAnyOrder(TAG1, TAG2);
+        assertThat(dto.getAuthorUsername()).isEqualTo(USERNAME);
+        assertThat(dto.getTags()).containsExactlyInAnyOrder(TAG1, TAG2);
     }
 
     @Test
-    void shouldHandleEmptyTags() {
-        Event event = Event.builder()
-                .title(TITLE)
-                .description(DESCRIPTION)
-                .tags(Set.of())
-                .build();
+    void shouldReturnEmptyTagsWhenTagsNullOrEmpty() {
+        Event withEmpty = Event.builder().tags(Set.of()).build();
+        Event withNull = Event.builder().tags(null).build();
 
-        EventResponse dto = mapper.toDto(event);
-
-        assertThat(dto.getTags()).isEmpty();
+        assertThat(mapper.toDto(withEmpty).getTags()).isEmpty();
+        assertThat(mapper.toDto(withNull).getTags()).isEmpty();
     }
 
     @Test
-    void shouldHandleNullFields() {
-        Event event = Event.builder()
-                .title(null)
-                .description(null)
-                .city(null)
-                .country(null)
-                .venue(null)
-                .link(null)
-                .author(null)
-                .dateTime(null)
-                .createdAt(null)
-                .tags(null)
+    void shouldHandleNullAuthorAndAuthorUsername() {
+        Event noAuthor = Event.builder().author(null).build();
+        Event nullUsername = Event.builder()
+                .author(User.builder().id(1L).username(null).build())
                 .build();
+
+        assertThat(mapper.toDto(noAuthor).getAuthorUsername()).isNull();
+        assertThat(mapper.toDto(nullUsername).getAuthorUsername()).isNull();
+    }
+
+    @Test
+    void shouldMapNullFieldsSafely() {
+        Event event = Event.builder().build();
 
         EventResponse dto = mapper.toDto(event);
 
+        assertThat(dto).isNotNull();
         assertThat(dto.getTitle()).isNull();
         assertThat(dto.getDescription()).isNull();
         assertThat(dto.getCity()).isNull();
@@ -118,7 +107,6 @@ class EventMapperTest {
     @ParameterizedTest
     @NullSource
     void shouldReturnNullWhenEventIsNull(Event event) {
-        EventResponse dto = mapper.toDto(event);
-        assertThat(dto).isNull();
+        assertThat(mapper.toDto(event)).isNull();
     }
 }
