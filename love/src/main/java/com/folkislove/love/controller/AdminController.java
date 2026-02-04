@@ -1,5 +1,6 @@
 package com.folkislove.love.controller;
 
+import com.folkislove.love.service.CommentService;
 import com.folkislove.love.service.CurrentUserService;
 import com.folkislove.love.service.UserService;
 
@@ -22,7 +23,7 @@ public class AdminController {
 
     //private final PostService postService;
     //private final EventService eventService;
-    //private final CommentService commentService;
+    private final CommentService commentService;
     private final UserService userService;
     private final CurrentUserService currentUserService;
 
@@ -43,7 +44,7 @@ public class AdminController {
     @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {
         checkCurrentIsAdmin();
-        //commentService.deleteComment(commentId);
+        commentService.deleteComment(commentId);
         return ResponseEntity.noContent().build();
     }
 
