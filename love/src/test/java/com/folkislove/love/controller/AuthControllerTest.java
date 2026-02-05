@@ -1,8 +1,8 @@
 package com.folkislove.love.controller;
 
-import com.folkislove.love.dto.AuthRequest;
-import com.folkislove.love.dto.RegisterRequest;
-import com.folkislove.love.dto.UserResponse;
+import com.folkislove.love.dto.request.AuthRequest;
+import com.folkislove.love.dto.request.RegisterRequest;
+import com.folkislove.love.dto.response.UserResponse;
 import com.folkislove.love.mapper.UserMapper;
 import com.folkislove.love.model.User;
 import com.folkislove.love.service.AuthService;

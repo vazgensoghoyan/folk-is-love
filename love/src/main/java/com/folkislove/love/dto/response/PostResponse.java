@@ -1,4 +1,4 @@
-package com.folkislove.love.dto;
+package com.folkislove.love.dto.response;
 
 import java.time.LocalDateTime;
 import java.util.List;

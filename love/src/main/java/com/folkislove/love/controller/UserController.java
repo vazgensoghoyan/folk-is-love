@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.folkislove.love.dto.UserResponse;
+import com.folkislove.love.dto.response.UserResponse;
 import com.folkislove.love.service.UserService;
 
 import lombok.AllArgsConstructor;

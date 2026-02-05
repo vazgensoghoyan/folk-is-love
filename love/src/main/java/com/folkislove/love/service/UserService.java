@@ -4,7 +4,7 @@ import com.folkislove.love.model.Tag;
 import com.folkislove.love.model.User;
 import com.folkislove.love.repository.TagRepository;
 import com.folkislove.love.repository.UserRepository;
-import com.folkislove.love.dto.UserResponse;
+import com.folkislove.love.dto.response.UserResponse;
 import com.folkislove.love.mapper.UserMapper;
 
 import lombok.AllArgsConstructor;

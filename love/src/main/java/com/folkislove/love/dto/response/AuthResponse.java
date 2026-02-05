@@ -1,4 +1,4 @@
-package com.folkislove.love.dto;
+package com.folkislove.love.dto.response;
 
 import lombok.Builder;
 import lombok.Data;

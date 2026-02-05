@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-import com.folkislove.love.dto.EventResponse;
+import com.folkislove.love.dto.response.EventResponse;
 import com.folkislove.love.model.Event;
 import com.folkislove.love.model.Tag;
 import com.folkislove.love.model.User;

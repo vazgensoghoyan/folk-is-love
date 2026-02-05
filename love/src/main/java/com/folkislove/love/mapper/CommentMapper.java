@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-import com.folkislove.love.dto.CommentResponse;
+import com.folkislove.love.dto.response.CommentResponse;
 import com.folkislove.love.model.Comment;
 import com.folkislove.love.model.User;
 

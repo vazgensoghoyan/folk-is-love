@@ -1,8 +1,8 @@
 package com.folkislove.love.controller;
 
-import com.folkislove.love.dto.UserResponse;
 import com.folkislove.love.model.User.Role;
 import com.folkislove.love.service.UserService;
+import com.folkislove.love.dto.response.UserResponse;
 import com.folkislove.love.exception.GlobalExceptionHandler;
 
 import org.junit.jupiter.api.BeforeEach;

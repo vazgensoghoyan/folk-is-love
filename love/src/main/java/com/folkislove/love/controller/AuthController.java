@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.folkislove.love.dto.AuthRequest;
-import com.folkislove.love.dto.AuthResponse;
-import com.folkislove.love.dto.RegisterRequest;
-import com.folkislove.love.dto.UserResponse;
+import com.folkislove.love.dto.request.AuthRequest;
+import com.folkislove.love.dto.request.RegisterRequest;
+import com.folkislove.love.dto.response.AuthResponse;
+import com.folkislove.love.dto.response.UserResponse;
 import com.folkislove.love.mapper.UserMapper;
 import com.folkislove.love.model.User;
 import com.folkislove.love.service.AuthService;
