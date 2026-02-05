@@ -3,7 +3,8 @@ package com.folkislove.love.controller;
 import com.folkislove.love.exception.GlobalExceptionHandler;
 import com.folkislove.love.service.CommentService;
 import com.folkislove.love.service.CurrentUserService;
-import com.folkislove.love.service.UserService;
+import com.folkislove.love.service.admin.UserServiceAdmin;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -20,16 +21,16 @@ class AdminControllerTest {
 
     private MockMvc mockMvc;
     private CommentService commentService;
-    private UserService userService;
+    private UserServiceAdmin userServiceAdmin;
     private CurrentUserService currentUserService;
 
     @BeforeEach
     void setUp() {
         commentService = mock(CommentService.class);
-        userService = mock(UserService.class);
+        userServiceAdmin = mock(UserServiceAdmin.class);
         currentUserService = mock(CurrentUserService.class);
 
-        AdminController controller = new AdminController(commentService, userService, currentUserService);
+        AdminController controller = new AdminController(commentService, userServiceAdmin, currentUserService);
         
         mockMvc = MockMvcBuilders
             .standaloneSetup(controller)
@@ -67,7 +68,7 @@ class AdminControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
-        verify(userService, times(1)).deleteUser(2L);
+        verify(userServiceAdmin, times(1)).deleteUser(2L);
     }
 
 }

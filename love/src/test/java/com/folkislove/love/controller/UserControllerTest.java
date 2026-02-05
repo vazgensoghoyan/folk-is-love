@@ -7,7 +7,6 @@ import com.folkislove.love.exception.GlobalExceptionHandler;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -99,33 +98,4 @@ class UserControllerTest {
 
         verify(userService, times(1)).removeInterest(5L);
     }
-
-    @Test
-    void getAllUsers_shouldReturnList() throws Exception {
-        UserResponse user1 = UserResponse.builder()
-            .username("john")
-            .email("john@example.com")
-            .role(Role.USER)
-            .build();
-
-        UserResponse user2 = UserResponse.builder()
-            .username("alice")
-            .email("alice@example.com")
-            .role(Role.ADMIN)
-            .build();
-
-        when(userService.getAllUsers(any(Pageable.class)))
-            .thenReturn(List.of(user1, user2));
-
-        mockMvc.perform(get("/api/users")
-                        .param("page", "0")
-                        .param("size", "10")
-                        .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].username").value("john"))
-            .andExpect(jsonPath("$[1].username").value("alice"));
-
-        verify(userService, times(1)).getAllUsers(any(Pageable.class));
-    }
-
 }

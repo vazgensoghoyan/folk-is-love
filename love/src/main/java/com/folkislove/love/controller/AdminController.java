@@ -2,7 +2,7 @@ package com.folkislove.love.controller;
 
 import com.folkislove.love.service.CommentService;
 import com.folkislove.love.service.CurrentUserService;
-import com.folkislove.love.service.UserService;
+import com.folkislove.love.service.admin.UserServiceAdmin;
 
 import lombok.AllArgsConstructor;
 
@@ -21,10 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class AdminController {
 
-    //private final PostService postService;
-    //private final EventService eventService;
     private final CommentService commentService;
-    private final UserService userService;
+    private final UserServiceAdmin userServiceAdmin;
     private final CurrentUserService currentUserService;
 
     @DeleteMapping("/posts/{postId}")
@@ -51,7 +49,7 @@ public class AdminController {
     @DeleteMapping("/users/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
         checkCurrentIsAdmin();
-        userService.deleteUser(userId);
+        userServiceAdmin.deleteUser(userId);
         return ResponseEntity.noContent().build();
     }
 
@@ -60,5 +58,4 @@ public class AdminController {
             throw new RuntimeException("You don't have permission to access this resource");
         }
     }
-
 }

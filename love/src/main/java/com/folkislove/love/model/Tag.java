@@ -28,7 +28,7 @@ public class Tag {
     @EqualsAndHashCode.Include  
     @NotBlank
     @Size(min = 2, max = 50)
-    @Column(unique = true, nullable = false, length = 50, updatable = false)
+    @Column(unique = true, nullable = false, length = 50)
     private String name;
 
     @JsonIgnore
