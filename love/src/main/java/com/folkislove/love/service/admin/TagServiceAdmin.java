@@ -1,16 +1,13 @@
 package com.folkislove.love.service.admin;
 
 import com.folkislove.love.model.Tag;
-import com.folkislove.love.model.Post;
-import com.folkislove.love.model.Event;
-import com.folkislove.love.model.User;
 import com.folkislove.love.repository.TagRepository;
+import com.folkislove.love.service.CurrentUserService;
 
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashSet;
 
 @Service
 @RequiredArgsConstructor
@@ -18,8 +15,11 @@ import java.util.HashSet;
 public class TagServiceAdmin {
 
     private final TagRepository tagRepository;
+    private final CurrentUserService currentUserService;
 
     public Tag createTag(String name) {
+        checkCurrentIsAdmin();
+
         String normalized = normalize(name);
 
         if (tagRepository.existsByNameIgnoreCase(normalized)) {
@@ -34,6 +34,8 @@ public class TagServiceAdmin {
     }
 
     public Tag renameTag(Long tagId, String newName) {
+        checkCurrentIsAdmin();
+
         Tag tag = getTagOrThrow(tagId);
         String normalized = normalize(newName);
 
@@ -46,6 +48,8 @@ public class TagServiceAdmin {
     }
 
     public void deleteTag(Long tagId) {
+        checkCurrentIsAdmin();
+
         Tag tag = getTagOrThrow(tagId);
 
         if (!tag.getPosts().isEmpty() ||
@@ -57,31 +61,7 @@ public class TagServiceAdmin {
         tagRepository.delete(tag);
     }
 
-    public void mergeTags(Long sourceTagId, Long targetTagId) {
-        if (sourceTagId.equals(targetTagId)) {
-            throw new IllegalArgumentException("Cannot merge the same tag");
-        }
-
-        Tag source = getTagOrThrow(sourceTagId);
-        Tag target = getTagOrThrow(targetTagId);
-
-        for (Post post : new HashSet<>(source.getPosts())) {
-            post.getTags().remove(source);
-            post.getTags().add(target);
-        }
-
-        for (Event event : new HashSet<>(source.getEvents())) {
-            event.getTags().remove(source);
-            event.getTags().add(target);
-        }
-
-        for (User user : new HashSet<>(source.getUsers())) {
-            user.getInterests().remove(source);
-            user.getInterests().add(target);
-        }
-
-        tagRepository.delete(source);
-    }
+    // private helpers
 
     private Tag getTagOrThrow(Long id) {
         return tagRepository.findById(id)
@@ -90,5 +70,11 @@ public class TagServiceAdmin {
 
     private String normalize(String name) {
         return name.trim();
+    }
+    
+    private void checkCurrentIsAdmin() {
+        if (!currentUserService.isAdmin()) {
+            throw new RuntimeException("You don't have permission to access this resource");
+        }
     }
 }

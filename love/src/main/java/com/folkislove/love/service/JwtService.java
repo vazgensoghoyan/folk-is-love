@@ -33,12 +33,12 @@ public class JwtService {
         Date expiryDate = new Date(now.getTime() + expirationMs);
 
         return Jwts.builder()
-                .subject(username)
-                .claim("role", role)
-                .issuedAt(now)
-                .expiration(expiryDate)
-                .signWith(secretKey)
-                .compact();
+            .subject(username)
+            .claim("role", role)
+            .issuedAt(now)
+            .expiration(expiryDate)
+            .signWith(secretKey)
+            .compact();
     }
 
     public String extractUsername(String token) {
@@ -62,10 +62,10 @@ public class JwtService {
     private Claims parseClaims(String token) {
         try {
             return Jwts.parser()
-                    .verifyWith(secretKey)
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
         } catch (ExpiredJwtException e) {
             // даже если просрочен, возвращаем его claims
             return e.getClaims();

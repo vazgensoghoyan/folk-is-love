@@ -79,7 +79,7 @@ class UserServiceTest {
             RuntimeException ex = assertThrows(RuntimeException.class,
                     () -> userService.getUserByUsername("unknown"));
 
-            assertEquals("User not found", ex.getMessage());
+            assertEquals("User not found: unknown", ex.getMessage());
         }
     }
 
@@ -98,7 +98,6 @@ class UserServiceTest {
             userService.addInterest(1L);
 
             assertTrue(user.getInterests().contains(tag));
-            verify(userRepository, times(1)).save(user);
         }
 
         @Test
@@ -116,7 +115,6 @@ class UserServiceTest {
 
             assertEquals(1, user.getInterests().size());
             assertTrue(user.getInterests().contains(tag));
-            verify(userRepository, times(1)).save(user);
         }
 
         @Test
@@ -129,7 +127,7 @@ class UserServiceTest {
             RuntimeException ex = assertThrows(RuntimeException.class,
                     () -> userService.addInterest(1L));
 
-            assertEquals("Tag not found", ex.getMessage());
+            assertEquals("Tag not found: 1", ex.getMessage());
         }
     }
 
@@ -150,7 +148,6 @@ class UserServiceTest {
             userService.removeInterest(1L);
 
             assertFalse(user.getInterests().contains(tag));
-            verify(userRepository, times(1)).save(user);
         }
 
         @Test
@@ -163,7 +160,7 @@ class UserServiceTest {
             var exc = assertThrows(RuntimeException.class,
                     () -> userService.removeInterest(1L));
 
-            assertEquals("Tag not found", exc.getMessage());
+            assertEquals("Tag not found: 1", exc.getMessage());
         }
     }
 
@@ -180,10 +177,8 @@ class UserServiceTest {
 
             userService.addInterest(1L);
 
-            // Проверяем, что тег остался один и сохранение вызвано
             assertEquals(1, user.getInterests().size());
             assertTrue(user.getInterests().contains(tag));
-            verify(userRepository, times(1)).save(user);
         }
     }
 
@@ -200,9 +195,7 @@ class UserServiceTest {
 
             userService.removeInterest(1L);
 
-            // Проверяем, что список интересов по-прежнему пуст
             assertTrue(user.getInterests().isEmpty());
-            verify(userRepository, times(1)).save(user);
         }
     }
 }

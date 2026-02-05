@@ -4,6 +4,7 @@ import com.folkislove.love.model.Tag;
 import com.folkislove.love.model.User;
 import com.folkislove.love.repository.TagRepository;
 import com.folkislove.love.repository.UserRepository;
+
 import com.folkislove.love.dto.response.UserResponse;
 import com.folkislove.love.mapper.UserMapper;
 
@@ -29,7 +30,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserResponse getUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+            .orElseThrow(() -> new RuntimeException("User not found: " + username));
         return userMapper.toDto(user);
     }
 
@@ -37,17 +38,15 @@ public class UserService {
     public void addInterest(Long tagId) {
         User user = currentUserService.getCurrentUser();
         Tag tag = tagRepository.findById(tagId)
-                .orElseThrow(() -> new RuntimeException("Tag not found"));
+            .orElseThrow(() -> new RuntimeException("Tag not found: " + tagId));
         user.getInterests().add(tag);
-        userRepository.save(user); // TODO: избыточно ли?
     }
 
     @Transactional
     public void removeInterest(Long tagId) {
         User user = currentUserService.getCurrentUser();
         Tag tag = tagRepository.findById(tagId)
-                .orElseThrow(() -> new RuntimeException("Tag not found"));
+            .orElseThrow(() -> new RuntimeException("Tag not found: " + tagId));
         user.getInterests().remove(tag);
-        userRepository.save(user); // TODO: избыточно ли?
     }
 }
