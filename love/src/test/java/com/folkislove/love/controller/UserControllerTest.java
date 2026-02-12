@@ -1,6 +1,7 @@
 package com.folkislove.love.controller;
 
 import com.folkislove.love.model.User.Role;
+import com.folkislove.love.service.CurrentUserService;
 import com.folkislove.love.service.UserService;
 import com.folkislove.love.dto.response.UserResponse;
 import com.folkislove.love.exception.GlobalExceptionHandler;
@@ -22,12 +23,14 @@ class UserControllerTest {
 
     private MockMvc mockMvc;
     private UserService userService;
+    private CurrentUserService currentUserService;
 
     @BeforeEach
     void setUp() {
         userService = mock(UserService.class);
+        currentUserService = mock(CurrentUserService.class);
 
-        UserController controller = new UserController(userService);
+        UserController controller = new UserController(userService, currentUserService);
 
         mockMvc = MockMvcBuilders
             .standaloneSetup(controller)

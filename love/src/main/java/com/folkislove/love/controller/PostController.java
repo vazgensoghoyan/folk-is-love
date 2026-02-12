@@ -27,22 +27,16 @@ public class PostController {
         return ResponseEntity.ok(posts);
     }
 
-    @GetMapping("/tag/{tagId}")
-    public ResponseEntity<List<PostResponse>> getPostsByTag(@PathVariable Long tagId) {
-        List<PostResponse> posts = postService.getPostsByTag(tagId);
-        return ResponseEntity.ok(posts);
+    @PostMapping
+    public ResponseEntity<PostResponse> createPost(@RequestBody PostRequest request) {
+        PostResponse post = postService.createPost(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(post);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<PostResponse> getPostById(@PathVariable Long id) {
         PostResponse post = postService.getPostById(id);
         return ResponseEntity.ok(post);
-    }
-
-    @PostMapping
-    public ResponseEntity<PostResponse> createPost(@RequestBody PostRequest request) {
-        PostResponse post = postService.createPost(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(post);
     }
 
     @PutMapping("/{id}")
@@ -70,5 +64,11 @@ public class PostController {
 
         postService.deletePost(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/tag/{tagId}")
+    public ResponseEntity<List<PostResponse>> getPostsByTag(@PathVariable Long tagId) {
+        List<PostResponse> posts = postService.getPostsByTag(tagId);
+        return ResponseEntity.ok(posts);
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.folkislove.love.dto.response.UserResponse;
+import com.folkislove.love.service.CurrentUserService;
 import com.folkislove.love.service.UserService;
 
 import lombok.AllArgsConstructor;
@@ -15,6 +16,7 @@ import lombok.AllArgsConstructor;
 public class UserController {
 
     private final UserService userService;
+    private final CurrentUserService currentUserService;
 
     @GetMapping("/me")
     public ResponseEntity<UserResponse> getCurrentUser() {
@@ -36,5 +38,12 @@ public class UserController {
     public ResponseEntity<Void> removeInterest(@PathVariable Long tagId) {
         userService.removeInterest(tagId);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
+        currentUserService.checkIsAdmin();
+        userService.deleteUser(userId);
+        return ResponseEntity.noContent().build();
     }
 }

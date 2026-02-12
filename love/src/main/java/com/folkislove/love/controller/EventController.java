@@ -26,25 +26,15 @@ public class EventController {
         return ResponseEntity.ok(eventService.getAllEvents());
     }
 
-    @GetMapping("/upcoming")
-    public ResponseEntity<List<EventResponse>> getUpcomingEvents() {
-        return ResponseEntity.ok(eventService.getUpcomingEvents());
+    @PostMapping
+    public ResponseEntity<EventResponse> createEvent(@RequestBody EventRequest request) {
+        EventResponse response = eventService.createEvent(request);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<EventResponse> getEvent(@PathVariable Long id) {
         return ResponseEntity.ok(eventService.getById(id));
-    }
-
-    @GetMapping("/tag/{tagId}")
-    public ResponseEntity<List<EventResponse>> getEventsByTag(@PathVariable Long tagId) {
-        return ResponseEntity.ok(eventService.getEventsByTag(tagId));
-    }
-
-    @PostMapping
-    public ResponseEntity<EventResponse> createEvent(@RequestBody EventRequest request) {
-        EventResponse response = eventService.createEvent(request);
-        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
@@ -71,5 +61,15 @@ public class EventController {
 
         eventService.deleteEvent(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/upcoming")
+    public ResponseEntity<List<EventResponse>> getUpcomingEvents() {
+        return ResponseEntity.ok(eventService.getUpcomingEvents());
+    }
+
+    @GetMapping("/tag/{tagId}")
+    public ResponseEntity<List<EventResponse>> getEventsByTag(@PathVariable Long tagId) {
+        return ResponseEntity.ok(eventService.getEventsByTag(tagId));
     }
 }
