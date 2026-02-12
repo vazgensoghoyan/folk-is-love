@@ -6,6 +6,8 @@ import com.folkislove.love.service.EventService;
 import com.folkislove.love.service.CurrentUserService;
 
 import lombok.AllArgsConstructor;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +33,7 @@ public class EventController {
 
     @GetMapping("/{id}")
     public ResponseEntity<EventResponse> getEvent(@PathVariable Long id) {
-        return ResponseEntity.ok(eventService.getEventById(id));
+        return ResponseEntity.ok(eventService.getById(id));
     }
 
     @GetMapping("/tag/{tagId}")
@@ -41,16 +43,7 @@ public class EventController {
 
     @PostMapping
     public ResponseEntity<EventResponse> createEvent(@RequestBody EventRequest request) {
-        EventResponse response = eventService.createEvent(
-                request.getTitle(),
-                request.getDescription(),
-                request.getDateTime(),
-                request.getCity(),
-                request.getCountry(),
-                request.getVenue(),
-                request.getLink(),
-                request.getTagIds()
-        );
+        EventResponse response = eventService.createEvent(request);
         return ResponseEntity.ok(response);
     }
 
@@ -59,22 +52,23 @@ public class EventController {
             @PathVariable Long id,
             @RequestBody EventRequest request
     ) {
-        EventResponse response = eventService.editEvent(
-                id,
-                request.getTitle(),
-                request.getDescription(),
-                request.getDateTime(),
-                request.getCity(),
-                request.getCountry(),
-                request.getVenue(),
-                request.getLink(),
-                request.getTagIds()
-        );
+        String authorUsername = eventService.getById(id).getAuthorUsername();
+        if (currentUserService.isOwnerOrAdmin(authorUsername)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        EventResponse response = eventService.editEvent(id, request);
+
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
+        String authorUsername = eventService.getById(id).getAuthorUsername();
+        if (currentUserService.isOwnerOrAdmin(authorUsername)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         eventService.deleteEvent(id);
         return ResponseEntity.noContent().build();
     }

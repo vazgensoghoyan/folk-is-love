@@ -1,6 +1,7 @@
 package com.folkislove.love.service;
 
 import com.folkislove.love.dto.response.CommentResponse;
+import com.folkislove.love.dto.response.EventResponse;
 import com.folkislove.love.mapper.CommentMapper;
 import com.folkislove.love.model.Comment;
 import com.folkislove.love.model.Post;
@@ -33,6 +34,11 @@ public class CommentService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public CommentResponse getById(Long eventId) {
+        return commentMapper.toDto(findCommentById(eventId));
+    }
+
     @Transactional
     public CommentResponse addComment(Long postId, String content) {
         Post post = postRepository.findById(postId)
@@ -50,8 +56,7 @@ public class CommentService {
 
     @Transactional
     public CommentResponse editComment(Long commentId, String content) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comment not found"));
+        Comment comment = findCommentById(commentId);
 
         currentUserService.checkOwnerOrAdmin(comment.getAuthor().getUsername());
 
@@ -62,11 +67,17 @@ public class CommentService {
 
     @Transactional
     public void deleteComment(Long commentId) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comment not found"));
+        Comment comment = findCommentById(commentId);
 
         currentUserService.checkOwnerOrAdmin(comment.getAuthor().getUsername());
 
         commentRepository.delete(comment);
+    }
+
+    // private methods
+
+    private Comment findCommentById(Long commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comment not found: " + commentId));
     }
 }

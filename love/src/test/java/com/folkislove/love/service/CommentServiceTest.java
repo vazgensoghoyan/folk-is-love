@@ -174,7 +174,7 @@ class CommentServiceTest {
             RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> commentService.editComment(1L, "text"));
 
-            assertEquals("Comment not found", ex.getMessage());
+            assertEquals("Comment not found: 1", ex.getMessage());
         }
     }
 
@@ -206,7 +206,7 @@ class CommentServiceTest {
             RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> commentService.deleteComment(7L));
 
-            assertEquals("Comment not found", ex.getMessage());
+            assertEquals("Comment not found: 7", ex.getMessage());
         }
     }
 }

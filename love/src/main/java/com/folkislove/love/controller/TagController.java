@@ -17,20 +17,33 @@ import java.util.List;
  * Обычные пользователи могут только читать.
  */
 @RestController
+@RequestMapping("/api/tags")
 @AllArgsConstructor
 public class TagController {
 
     private final TagService tagService;
     private final CurrentUserService currentUserService;
 
-    @PostMapping("/api/admin/tags")
+    @GetMapping
+    public ResponseEntity<List<Tag>> getAllTags() {
+        List<Tag> tags = tagService.getAllTags();
+        return ResponseEntity.ok(tags);
+    }
+
+    @GetMapping("/{tagId}")
+    public ResponseEntity<Tag> getTagById(@PathVariable Long tagId) {
+        Tag tag = tagService.getTagById(tagId);
+        return ResponseEntity.ok(tag);
+    }
+
+    @PostMapping("/admin")
     public ResponseEntity<Tag> createTag(@RequestParam String name) {
         currentUserService.checkIsAdmin();
         Tag tag = tagService.createTag(name);
         return ResponseEntity.ok(tag);
     }
 
-    @PutMapping("/api/admin/tags/{tagId}")
+    @PutMapping("/admin/{tagId}")
     public ResponseEntity<Tag> renameTag(
         @PathVariable Long tagId,
         @RequestParam String newName
@@ -40,29 +53,10 @@ public class TagController {
         return ResponseEntity.ok(tag);
     }
 
-    @DeleteMapping("/api/admin/tags/{tagId}")
+    @DeleteMapping("/admin/{tagId}")
     public ResponseEntity<Void> deleteTag(@PathVariable Long tagId) {
         currentUserService.checkIsAdmin();
         tagService.deleteTag(tagId);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/api/admin/tags")
-    public ResponseEntity<List<Tag>> getAllTagsAdmin() {
-        currentUserService.checkIsAdmin();
-        List<Tag> tags = tagService.getAllTags();
-        return ResponseEntity.ok(tags);
-    }
-
-    @GetMapping("/api/tags")
-    public ResponseEntity<List<Tag>> getAllTags() {
-        List<Tag> tags = tagService.getAllTags();
-        return ResponseEntity.ok(tags);
-    }
-
-    @GetMapping("/api/tags/{tagId}")
-    public ResponseEntity<Tag> getTagById(@PathVariable Long tagId) {
-        Tag tag = tagService.getTagById(tagId);
-        return ResponseEntity.ok(tag);
     }
 }

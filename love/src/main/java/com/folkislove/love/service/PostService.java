@@ -4,6 +4,7 @@ import com.folkislove.love.model.Post;
 import com.folkislove.love.model.Tag;
 import com.folkislove.love.repository.PostRepository;
 import com.folkislove.love.repository.TagRepository;
+import com.folkislove.love.dto.request.PostRequest;
 import com.folkislove.love.dto.response.PostResponse;
 import com.folkislove.love.mapper.PostMapper;
 
@@ -50,15 +51,17 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponse createPost(String title, String content, Set<Long> tagIds) {
-        Set<Tag> tags = tagIds.stream()
+    public PostResponse createPost(PostRequest request) {
+        Set<Tag> tags = request
+                .getTagIds()
+                .stream()
                 .map(id -> tagRepository.findById(id)
                         .orElseThrow(() -> new RuntimeException("Tag not found: " + id)))
                 .collect(Collectors.toSet());
 
         Post post = Post.builder()
-                .title(title)
-                .content(content)
+                .title(request.getTitle())
+                .content(request.getContent())
                 .author(currentUserService.getCurrentUser())
                 .tags(tags)
                 .build();
@@ -68,20 +71,23 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponse editPost(Long postId, String title, String content, Set<Long> tagIds) {
+    public PostResponse editPost(Long postId, PostRequest request) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
         currentUserService.checkOwnerOrAdmin(post.getAuthor().getUsername());
 
-        if (title != null) post.setTitle(title);
-        if (content != null) post.setContent(content);
+        if (request.getTitle() != null) post.setTitle(request.getTitle());
+        if (request.getContent() != null) post.setContent(request.getContent());
 
-        if (tagIds != null) {
-            Set<Tag> tags = tagIds.stream()
-                    .map(id -> tagRepository.findById(id)
-                            .orElseThrow(() -> new RuntimeException("Tag not found: " + id)))
-                    .collect(Collectors.toSet());
+        if (request.getTagIds() != null) {
+            Set<Tag> tags = request
+                .getTagIds()
+                .stream()
+                .map(id -> tagRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException("Tag not found: " + id)))
+                .collect(Collectors.toSet());
+
             post.setTags(tags);
         }
 

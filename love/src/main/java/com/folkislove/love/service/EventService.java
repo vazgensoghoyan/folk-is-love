@@ -4,6 +4,7 @@ import com.folkislove.love.model.Event;
 import com.folkislove.love.model.Tag;
 import com.folkislove.love.repository.EventRepository;
 import com.folkislove.love.repository.TagRepository;
+import com.folkislove.love.dto.request.EventRequest;
 import com.folkislove.love.dto.response.EventResponse;
 import com.folkislove.love.mapper.EventMapper;
 
@@ -33,10 +34,8 @@ public class EventService {
     }
 
     @Transactional(readOnly = true)
-    public EventResponse getEventById(Long eventId) {
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Event not found: " + eventId));
-        return eventMapper.toDto(event);
+    public EventResponse getById(Long eventId) {
+        return eventMapper.toDto(findEventById(eventId));
     }
 
     @Transactional(readOnly = true)
@@ -51,88 +50,66 @@ public class EventService {
 
     @Transactional(readOnly = true)
     public List<EventResponse> getUpcomingEvents() {
+        LocalDateTime now = LocalDateTime.now();
         return eventRepository.findAll().stream()
-                .filter(e -> e.getDateTime().isAfter(LocalDateTime.now()))
+                .filter(e -> e.getDateTime().isAfter(now))
                 .map(eventMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public EventResponse createEvent(
-            String title,
-            String description,
-            LocalDateTime dateTime,
-            String city,
-            String country,
-            String venue,
-            String link,
-            Set<Long> tagIds
-    ) {
-        Set<Tag> tags = tagIds.stream()
-                .map(id -> tagRepository.findById(id)
-                        .orElseThrow(() -> new RuntimeException("Tag not found: " + id)))
-                .collect(Collectors.toSet());
-
+    public EventResponse createEvent(EventRequest request) {
         Event event = Event.builder()
-                .title(title)
-                .description(description)
-                .dateTime(dateTime)
-                .city(city)
-                .country(country)
-                .venue(venue)
-                .link(link)
+                .title(request.getTitle())
+                .description(request.getDescription())
+                .dateTime(request.getDateTime())
+                .city(request.getCity())
+                .country(request.getCountry())
+                .venue(request.getVenue())
+                .link(request.getLink())
                 .author(currentUserService.getCurrentUser())
-                .tags(tags)
+                .tags(getTagsByIds(request.getTagIds()))
                 .build();
 
-        Event saved = eventRepository.save(event);
-        return eventMapper.toDto(saved);
+        return eventMapper.toDto(eventRepository.save(event));
     }
 
     @Transactional
-    public EventResponse editEvent(
-            Long eventId,
-            String title,
-            String description,
-            LocalDateTime dateTime,
-            String city,
-            String country,
-            String venue,
-            String link,
-            Set<Long> tagIds
-    ) {
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Event not found: " + eventId));
-
+    public EventResponse editEvent(Long eventId, EventRequest request) {
+        Event event = findEventById(eventId);
         currentUserService.checkOwnerOrAdmin(event.getAuthor().getUsername());
 
-        if (title != null) event.setTitle(title);
-        if (description != null) event.setDescription(description);
-        if (dateTime != null) event.setDateTime(dateTime);
-        if (city != null) event.setCity(city);
-        if (country != null) event.setCountry(country);
-        if (venue != null) event.setVenue(venue);
-        if (link != null) event.setLink(link);
+        if (request.getTitle() != null) event.setTitle(request.getTitle());
+        if (request.getDescription() != null) event.setDescription(request.getDescription());
+        if (request.getDateTime() != null) event.setDateTime(request.getDateTime());
+        if (request.getCity() != null) event.setCity(request.getCity());
+        if (request.getCountry() != null) event.setCountry(request.getCountry());
+        if (request.getVenue() != null) event.setVenue(request.getVenue());
+        if (request.getLink() != null) event.setLink(request.getLink());
+        if (request.getTagIds() != null) event.setTags(getTagsByIds(request.getTagIds()));
 
-        if (tagIds != null) {
-            Set<Tag> tags = tagIds.stream()
-                    .map(id -> tagRepository.findById(id)
-                            .orElseThrow(() -> new RuntimeException("Tag not found: " + id)))
-                    .collect(Collectors.toSet());
-            event.setTags(tags);
-        }
-
-        Event saved = eventRepository.save(event);
-        return eventMapper.toDto(saved);
+        return eventMapper.toDto(eventRepository.save(event));
     }
 
     @Transactional
     public void deleteEvent(Long eventId) {
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Event not found: " + eventId));
-
+        Event event = findEventById(eventId);
         currentUserService.checkOwnerOrAdmin(event.getAuthor().getUsername());
-
         eventRepository.delete(event);
+    }
+
+    // private methods
+
+    private Event findEventById(Long eventId) {
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found: " + eventId));
+    }
+
+    private Set<Tag> getTagsByIds(Set<Long> tagIds) {
+        if (tagIds == null || tagIds.isEmpty()) return Set.of();
+        return tagIds.stream()
+                .map(id -> tagRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException("Tag not found: " + id)))
+                .collect(Collectors.toSet());
     }
 }

@@ -36,6 +36,10 @@ public class CurrentUserService {
         return user.getRole() == User.Role.ADMIN;
     }
 
+    public boolean isOwner(String username) {
+        return getCurrentUsername().equals(username);
+    }
+
     public void checkIsAdmin() {
         if (!isAdmin()) {
             throw new RuntimeException("You are not admin");
