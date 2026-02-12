@@ -2,7 +2,7 @@ package com.folkislove.love.controller;
 
 import com.folkislove.love.service.CommentService;
 import com.folkislove.love.service.CurrentUserService;
-import com.folkislove.love.service.admin.UserServiceAdmin;
+import com.folkislove.love.service.UserService;
 
 import lombok.AllArgsConstructor;
 
@@ -22,40 +22,34 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminController {
 
     private final CommentService commentService;
-    private final UserServiceAdmin userServiceAdmin;
+    private final UserService userService;
     private final CurrentUserService currentUserService;
 
     @DeleteMapping("/posts/{postId}")
     public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
-        checkCurrentIsAdmin();
+        currentUserService.checkIsAdmin();
         //postService.deletePost(postId);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/events/{eventId}")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long eventId) {
-        checkCurrentIsAdmin();
+        currentUserService.checkIsAdmin();
         //eventService.deleteEvent(eventId);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {
-        checkCurrentIsAdmin();
+        currentUserService.checkIsAdmin();
         commentService.deleteComment(commentId);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/users/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
-        checkCurrentIsAdmin();
-        userServiceAdmin.deleteUser(userId);
+        currentUserService.checkIsAdmin();
+        userService.deleteUser(userId);
         return ResponseEntity.noContent().build();
-    }
-
-    private void checkCurrentIsAdmin() {
-        if (!currentUserService.isAdmin()) {
-            throw new RuntimeException("You don't have permission to access this resource");
-        }
     }
 }

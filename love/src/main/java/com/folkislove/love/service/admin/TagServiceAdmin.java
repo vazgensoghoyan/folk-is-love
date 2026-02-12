@@ -18,7 +18,7 @@ public class TagServiceAdmin {
     private final CurrentUserService currentUserService;
 
     public Tag createTag(String name) {
-        checkCurrentIsAdmin();
+        currentUserService.checkIsAdmin();
 
         String normalized = normalize(name);
 
@@ -34,7 +34,7 @@ public class TagServiceAdmin {
     }
 
     public Tag renameTag(Long tagId, String newName) {
-        checkCurrentIsAdmin();
+        currentUserService.checkIsAdmin();
 
         Tag tag = getTagOrThrow(tagId);
         String normalized = normalize(newName);
@@ -48,7 +48,7 @@ public class TagServiceAdmin {
     }
 
     public void deleteTag(Long tagId) {
-        checkCurrentIsAdmin();
+        currentUserService.checkIsAdmin();
 
         Tag tag = getTagOrThrow(tagId);
 
@@ -70,11 +70,5 @@ public class TagServiceAdmin {
 
     private String normalize(String name) {
         return name.trim();
-    }
-    
-    private void checkCurrentIsAdmin() {
-        if (!currentUserService.isAdmin()) {
-            throw new RuntimeException("You don't have permission to access this resource");
-        }
     }
 }

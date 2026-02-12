@@ -49,4 +49,12 @@ public class UserService {
             .orElseThrow(() -> new RuntimeException("Tag not found: " + tagId));
         user.getInterests().remove(tag);
     }
+    
+    @Transactional
+    public void deleteUser(Long userId) {
+        currentUserService.checkIsAdmin();
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        userRepository.delete(user);
+    }
 }
