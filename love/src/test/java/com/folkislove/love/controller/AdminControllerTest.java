@@ -3,6 +3,7 @@ package com.folkislove.love.controller;
 import com.folkislove.love.exception.GlobalExceptionHandler;
 import com.folkislove.love.service.CommentService;
 import com.folkislove.love.service.CurrentUserService;
+import com.folkislove.love.service.PostService;
 import com.folkislove.love.service.UserService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -18,17 +19,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AdminControllerTest {
 
     private MockMvc mockMvc;
-    private CommentService commentService;
     private UserService userService;
+    private PostService postService;
+    private CommentService commentService;
     private CurrentUserService currentUserService;
 
     @BeforeEach
     void setUp() {
-        commentService = mock(CommentService.class);
         userService = mock(UserService.class);
+        postService = mock(PostService.class);
+        commentService = mock(CommentService.class);
         currentUserService = mock(CurrentUserService.class);
 
-        AdminController controller = new AdminController(commentService, userService, currentUserService);
+        AdminController controller = new AdminController(
+            userService,
+            postService,
+            commentService,
+            currentUserService
+        );
         
         mockMvc = MockMvcBuilders
             .standaloneSetup(controller)

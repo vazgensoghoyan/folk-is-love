@@ -11,23 +11,13 @@ import lombok.Data;
 public class EventResponse {
 
     private String title;
-
     private String description;
-
     private LocalDateTime dateTime;
-
     private String city;
-
     private String country;
-
     private String venue;
-
     private String link;
-
     private String authorUsername;
-
     private LocalDateTime createdAt;
-
     private List<String> tags;
-
 }

@@ -11,15 +11,9 @@ import lombok.Data;
 public class PostResponse {
     
     private String title;
-
     private String content;
-
     private String authorUsername;
-
     private LocalDateTime createdAt;
-
     private List<String> tags;
-
     private Integer commentsCount;
-
 }

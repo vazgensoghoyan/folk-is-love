@@ -12,13 +12,8 @@ import lombok.Data;
 public class UserResponse {
     
     private String username;
-
     private String email;
-
     private String bio;
-
     private Role role;
-
     private List<String> interests;
-
 }
