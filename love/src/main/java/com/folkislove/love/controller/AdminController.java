@@ -2,6 +2,7 @@ package com.folkislove.love.controller;
 
 import com.folkislove.love.service.CommentService;
 import com.folkislove.love.service.CurrentUserService;
+import com.folkislove.love.service.PostService;
 import com.folkislove.love.service.UserService;
 
 import lombok.AllArgsConstructor;
@@ -21,14 +22,15 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class AdminController {
 
-    private final CommentService commentService;
     private final UserService userService;
+    private final PostService postService;
+    private final CommentService commentService;
     private final CurrentUserService currentUserService;
 
     @DeleteMapping("/posts/{postId}")
     public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
         currentUserService.checkIsAdmin();
-        //postService.deletePost(postId);
+        postService.deletePost(postId);
         return ResponseEntity.noContent().build();
     }
 

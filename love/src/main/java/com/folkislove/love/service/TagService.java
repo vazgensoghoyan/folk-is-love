@@ -1,10 +1,11 @@
-package com.folkislove.love.service.admin;
+package com.folkislove.love.service;
 
 import com.folkislove.love.model.Tag;
 import com.folkislove.love.repository.TagRepository;
-import com.folkislove.love.service.CurrentUserService;
 
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,10 +13,21 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class TagServiceAdmin {
+public class TagService {
 
     private final TagRepository tagRepository;
     private final CurrentUserService currentUserService;
+
+    @Transactional(readOnly = true)
+    public Tag getTagById(Long id) {
+        return tagRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Tag not found: " + id));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Tag> getAllTags() {
+        return tagRepository.findAll();
+    }
 
     public Tag createTag(String name) {
         currentUserService.checkIsAdmin();
