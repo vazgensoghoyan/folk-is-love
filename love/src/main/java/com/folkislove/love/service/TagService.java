@@ -1,5 +1,7 @@
 package com.folkislove.love.service;
 
+import com.folkislove.love.dto.response.TagResponse;
+import com.folkislove.love.mapper.TagMapper;
 import com.folkislove.love.model.Tag;
 import com.folkislove.love.repository.TagRepository;
 
@@ -16,20 +18,27 @@ import org.springframework.transaction.annotation.Transactional;
 public class TagService {
 
     private final TagRepository tagRepository;
+    private final TagMapper tagMapper;
     private final CurrentUserService currentUserService;
 
     @Transactional(readOnly = true)
-    public Tag getTagById(Long id) {
-        return tagRepository.findById(id)
+    public TagResponse getTagById(Long id) {
+        Tag tag = tagRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tag not found: " + id));
+
+        return tagMapper.toDto(tag);
     }
 
     @Transactional(readOnly = true)
-    public List<Tag> getAllTags() {
-        return tagRepository.findAll();
+    public List<TagResponse> getAllTags() {
+        return tagRepository
+                .findAll()
+                .stream()
+                .map(tagMapper::toDto)
+                .toList();
     }
 
-    public Tag createTag(String name) {
+    public TagResponse createTag(String name) {
         currentUserService.checkIsAdmin();
 
         String normalized = normalize(name);
@@ -42,10 +51,11 @@ public class TagService {
                 .name(normalized)
                 .build();
 
-        return tagRepository.save(tag);
+        Tag response = tagRepository.save(tag);
+        return tagMapper.toDto(response);
     }
 
-    public Tag renameTag(Long tagId, String newName) {
+    public TagResponse renameTag(Long tagId, String newName) {
         currentUserService.checkIsAdmin();
 
         Tag tag = getTagOrThrow(tagId);
@@ -56,7 +66,7 @@ public class TagService {
         }
 
         tag.setName(normalized);
-        return tag;
+        return tagMapper.toDto(tag);
     }
 
     public void deleteTag(Long tagId) {
