@@ -29,7 +29,7 @@ public class EventController {
     @PostMapping
     public ResponseEntity<EventResponse> createEvent(@RequestBody EventRequest request) {
         EventResponse response = eventService.createEvent(request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{id}")
@@ -43,9 +43,8 @@ public class EventController {
             @RequestBody EventRequest request
     ) {
         String authorUsername = eventService.getById(id).getAuthorUsername();
-        if (!currentUserService.isOwnerOrAdmin(authorUsername)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+
+        currentUserService.checkIsOwner(authorUsername);
 
         EventResponse response = eventService.editEvent(id, request);
 
@@ -55,9 +54,8 @@ public class EventController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
         String authorUsername = eventService.getById(id).getAuthorUsername();
-        if (!currentUserService.isOwnerOrAdmin(authorUsername)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+
+        currentUserService.checkIsOwnerOrAdmin(authorUsername);
 
         eventService.deleteEvent(id);
         return ResponseEntity.noContent().build();

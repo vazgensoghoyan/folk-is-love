@@ -4,6 +4,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.folkislove.love.exception.EmailAlreadyRegisteredException;
+import com.folkislove.love.dto.request.AuthRequest;
+import com.folkislove.love.dto.request.RegisterRequest;
 import com.folkislove.love.exception.AuthorizationException;
 import com.folkislove.love.exception.UsernameAlreadyTakenException;
 import com.folkislove.love.model.User;
@@ -22,18 +24,22 @@ public class AuthService {
     private final JwtService jwtService;
     private final UserCredentialsValidator credentialsValidator;
 
-    public String login(String username, String password) {
-        User user = userRepository.findByUsername(username)
+    public String login(AuthRequest request) {
+        User user = userRepository.findByUsername(request.getUsername())
                     .orElseThrow(() -> new AuthorizationException("Invalid username or password"));
 
-        if (!passwordEncoder.matches(password, user.getPasswordHash())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
             throw new AuthorizationException("Invalid username or password");
         }
 
         return jwtService.generateToken(user.getUsername(), user.getRole().name());
     }
 
-    public User register(String username, String email, String password) {
+    public User register(RegisterRequest request) {
+        String username = request.getUsername();
+        String email = request.getEmail();
+        String password = request.getPassword();
+
         credentialsValidator.validateUsername(username);
         credentialsValidator.validateEmail(email);
         credentialsValidator.validatePassword(password);

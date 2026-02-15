@@ -1,5 +1,6 @@
 package com.folkislove.love.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +39,7 @@ public class UserController {
     @PostMapping("/interests/{tagId}")
     public ResponseEntity<Void> addInterest(@PathVariable Long tagId) {
         userService.addInterest(tagId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/interests/{tagId}")

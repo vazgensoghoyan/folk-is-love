@@ -1,5 +1,6 @@
 package com.folkislove.love.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,21 +28,14 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest request) {
-        String token = authService.login(
-            request.getUsername(), 
-            request.getPassword()
-        );
+        String token = authService.login(request);
         var response = AuthResponse.builder().token(token).build();
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
-        User user = authService.register(
-            request.getUsername(),
-            request.getEmail(),
-            request.getPassword()
-        );
-        return ResponseEntity.ok(userMapper.toDto(user));
+        User user = authService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(userMapper.toDto(user));
     }
 }

@@ -157,7 +157,7 @@ class CommentServiceTest {
                 .build();
 
             when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
-            doNothing().when(currentUserService).checkOwnerOrAdmin("user1");
+            doNothing().when(currentUserService).checkIsOwnerOrAdmin("user1");
             when(commentRepository.save(comment)).thenReturn(updated);
             when(commentMapper.toDto(updated)).thenReturn(response);
 
@@ -192,7 +192,7 @@ class CommentServiceTest {
                 .build();
 
             when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
-            doNothing().when(currentUserService).checkOwnerOrAdmin("user1");
+            doNothing().when(currentUserService).checkIsOwnerOrAdmin("user1");
 
             commentService.deleteComment(commentId);
 

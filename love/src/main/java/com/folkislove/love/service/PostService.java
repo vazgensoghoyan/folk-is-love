@@ -3,9 +3,9 @@ package com.folkislove.love.service;
 import com.folkislove.love.model.Post;
 import com.folkislove.love.model.Tag;
 import com.folkislove.love.repository.PostRepository;
-import com.folkislove.love.repository.TagRepository;
 import com.folkislove.love.dto.request.PostRequest;
 import com.folkislove.love.dto.response.PostResponse;
+import com.folkislove.love.exception.ResourceNotFoundException;
 import com.folkislove.love.mapper.PostMapper;
 
 import lombok.AllArgsConstructor;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final TagRepository tagRepository;
+    private final TagService tagService;
     private final CurrentUserService currentUserService;
     private final PostMapper postMapper;
 
@@ -34,8 +34,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public List<PostResponse> getPostsByTag(Long tagId) {
-        Tag tag = tagRepository.findById(tagId)
-                .orElseThrow(() -> new RuntimeException("Tag not found: " + tagId));
+        Tag tag = tagService.getTagById(tagId);
 
         Set<Post> posts = tag.getPosts();
         return posts.stream()
@@ -44,10 +43,9 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PostResponse getPostById(Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
-        return postMapper.toDto(post);
+    public Post getPostById(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post", postId));
     }
 
     @Transactional
@@ -55,8 +53,7 @@ public class PostService {
         Set<Tag> tags = request
                 .getTagIds()
                 .stream()
-                .map(id -> tagRepository.findById(id)
-                        .orElseThrow(() -> new RuntimeException("Tag not found: " + id)))
+                .map(tagService::getTagById)
                 .collect(Collectors.toSet());
 
         Post post = Post.builder()
@@ -73,9 +70,9 @@ public class PostService {
     @Transactional
     public PostResponse editPost(Long postId, PostRequest request) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post", postId));
 
-        currentUserService.checkOwnerOrAdmin(post.getAuthor().getUsername());
+        currentUserService.checkIsOwnerOrAdmin(post.getAuthor().getUsername());
 
         if (request.getTitle() != null) post.setTitle(request.getTitle());
         if (request.getContent() != null) post.setContent(request.getContent());
@@ -84,8 +81,7 @@ public class PostService {
             Set<Tag> tags = request
                 .getTagIds()
                 .stream()
-                .map(id -> tagRepository.findById(id)
-                        .orElseThrow(() -> new RuntimeException("Tag not found: " + id)))
+                .map(tagService::getTagById)
                 .collect(Collectors.toSet());
 
             post.setTags(tags);
@@ -97,11 +93,8 @@ public class PostService {
 
     @Transactional
     public void deletePost(Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
-
-        currentUserService.checkOwnerOrAdmin(post.getAuthor().getUsername());
-
+        Post post = getPostById(postId);
+        currentUserService.checkIsOwnerOrAdmin(post.getAuthor().getUsername());
         postRepository.delete(post);
     }
 }

@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 
 public class ResourceNotFoundException extends AppException {
 
-    public ResourceNotFoundException(String resource, Long id) {
+    public ResourceNotFoundException(String resource, Object id) {
         super(HttpStatus.NOT_FOUND, resource + " not found: " + id);
     }
 }

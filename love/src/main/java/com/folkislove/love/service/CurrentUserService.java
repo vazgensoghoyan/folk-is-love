@@ -3,7 +3,6 @@ package com.folkislove.love.service;
 import com.folkislove.love.exception.AccessDeniedException;
 import com.folkislove.love.exception.AuthorizationException;
 import com.folkislove.love.model.User;
-import com.folkislove.love.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
 
@@ -41,17 +40,23 @@ public class CurrentUserService {
         return getCurrentUsername().equals(username);
     }
 
+    public boolean isOwnerOrAdmin(String username) {
+        return isOwner(username) || isAdmin();
+    }
+
     public void checkIsAdmin() {
         if (!isAdmin()) {
             throw new AccessDeniedException("You are not admin");
         }
     }
 
-    public boolean isOwnerOrAdmin(String username) {
-        return getCurrentUsername().equals(username) || isAdmin();
+    public void checkIsOwner(String username) {
+        if (!isOwner(username)) {
+            throw new AccessDeniedException("You are not owner of this resource");
+        }
     }
 
-    public void checkOwnerOrAdmin(String username) {
+    public void checkIsOwnerOrAdmin(String username) {
         if (!isOwnerOrAdmin(username)) {
             throw new AccessDeniedException("You don't have permission to access this resource");
         }

@@ -39,8 +39,9 @@ public class CommentController {
             @PathVariable Long commentId,
             @RequestBody String content
     ) {
-        String authorUsername = commentService.getById(commentId).getAuthorUsername();
-        currentUserService.checkOwnerOrAdmin(authorUsername);
+        String authorUsername = getUsernameByCommendId(commentId);
+
+        currentUserService.checkIsOwnerOrAdmin(authorUsername);
 
         CommentResponse updated = commentService.editComment(commentId, content);
         return ResponseEntity.ok(updated);
@@ -48,10 +49,17 @@ public class CommentController {
 
     @DeleteMapping("/{commentId}")
     public ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {
-        String authorUsername = commentService.getById(commentId).getAuthorUsername();
-        currentUserService.checkOwnerOrAdmin(authorUsername);
+        String authorUsername = getUsernameByCommendId(commentId);
+
+        currentUserService.checkIsOwnerOrAdmin(authorUsername);
 
         commentService.deleteComment(commentId);
         return ResponseEntity.noContent().build();
+    }
+
+    // private helper
+
+    private String getUsernameByCommendId(Long id) {
+        return commentService.getById(id).getAuthorUsername();
     }
 }

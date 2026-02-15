@@ -77,7 +77,7 @@ public class EventService {
     @Transactional
     public EventResponse editEvent(Long eventId, EventRequest request) {
         Event event = findEventById(eventId);
-        currentUserService.checkOwnerOrAdmin(event.getAuthor().getUsername());
+        currentUserService.checkIsOwnerOrAdmin(event.getAuthor().getUsername());
 
         if (request.getTitle() != null) event.setTitle(request.getTitle());
         if (request.getDescription() != null) event.setDescription(request.getDescription());
@@ -94,7 +94,7 @@ public class EventService {
     @Transactional
     public void deleteEvent(Long eventId) {
         Event event = findEventById(eventId);
-        currentUserService.checkOwnerOrAdmin(event.getAuthor().getUsername());
+        currentUserService.checkIsOwnerOrAdmin(event.getAuthor().getUsername());
         eventRepository.delete(event);
     }
 

@@ -8,6 +8,7 @@ import com.folkislove.love.service.TagService;
 
 import lombok.AllArgsConstructor;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,7 +46,7 @@ public class TagController {
     public ResponseEntity<TagResponse> createTag(@RequestParam String name) {
         currentUserService.checkIsAdmin();
         TagResponse tag = tagService.createTag(name);
-        return ResponseEntity.ok(tag);
+        return ResponseEntity.status(HttpStatus.CREATED).body(tag);
     }
 
     @PutMapping("/admin/{tagId}")

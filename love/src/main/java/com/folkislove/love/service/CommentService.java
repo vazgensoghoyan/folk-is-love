@@ -1,6 +1,7 @@
 package com.folkislove.love.service;
 
 import com.folkislove.love.dto.response.CommentResponse;
+import com.folkislove.love.exception.ResourceNotFoundException;
 import com.folkislove.love.mapper.CommentMapper;
 import com.folkislove.love.model.Comment;
 import com.folkislove.love.model.Post;
@@ -19,14 +20,19 @@ import java.util.stream.Collectors;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final PostRepository postRepository;
+    private final PostService postService;
     private final CurrentUserService currentUserService;
     private final CommentMapper commentMapper;
 
     @Transactional(readOnly = true)
+    public Comment findCommentById(Long commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Comment", commentId));
+    }
+
+    @Transactional(readOnly = true)
     public List<CommentResponse> getCommentsByPostId(Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+        Post post = postService.getPostById(postId);
 
         return post.getComments().stream()
                 .map(commentMapper::toDto)
@@ -40,8 +46,7 @@ public class CommentService {
 
     @Transactional
     public CommentResponse addComment(Long postId, String content) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+        Post post = postService.getPostById(postId);
 
         Comment comment = Comment.builder()
                 .post(post)
@@ -57,7 +62,7 @@ public class CommentService {
     public CommentResponse editComment(Long commentId, String content) {
         Comment comment = findCommentById(commentId);
 
-        currentUserService.checkOwnerOrAdmin(comment.getAuthor().getUsername());
+        currentUserService.checkIsOwnerOrAdmin(comment.getAuthor().getUsername());
 
         comment.setContent(content);
         Comment saved = commentRepository.save(comment);
@@ -68,15 +73,8 @@ public class CommentService {
     public void deleteComment(Long commentId) {
         Comment comment = findCommentById(commentId);
 
-        currentUserService.checkOwnerOrAdmin(comment.getAuthor().getUsername());
+        currentUserService.checkIsOwnerOrAdmin(comment.getAuthor().getUsername());
 
         commentRepository.delete(comment);
-    }
-
-    // private methods
-
-    private Comment findCommentById(Long commentId) {
-        return commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comment not found: " + commentId));
     }
 }
