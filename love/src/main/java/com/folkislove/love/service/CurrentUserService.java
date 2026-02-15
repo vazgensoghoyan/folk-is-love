@@ -1,8 +1,8 @@
 package com.folkislove.love.service;
 
-import com.folkislove.love.exception.AccessDeniedException;
-import com.folkislove.love.exception.AuthorizationException;
-import com.folkislove.love.exception.ResourceNotFoundException;
+import com.folkislove.love.exception.custom.AccessDeniedException;
+import com.folkislove.love.exception.custom.AuthorizationException;
+import com.folkislove.love.exception.custom.ResourceNotFoundException;
 import com.folkislove.love.model.User;
 import com.folkislove.love.repository.UserRepository;
 

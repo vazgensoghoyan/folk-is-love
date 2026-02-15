@@ -1,9 +1,9 @@
 package com.folkislove.love.service;
 
 import com.folkislove.love.dto.response.TagResponse;
-import com.folkislove.love.exception.ResourceNotFoundException;
-import com.folkislove.love.exception.TagAlreadyExistsException;
-import com.folkislove.love.exception.TagInUseException;
+import com.folkislove.love.exception.custom.ResourceNotFoundException;
+import com.folkislove.love.exception.custom.TagAlreadyExistsException;
+import com.folkislove.love.exception.custom.TagInUseException;
 import com.folkislove.love.mapper.TagMapper;
 import com.folkislove.love.model.Tag;
 import com.folkislove.love.repository.TagRepository;

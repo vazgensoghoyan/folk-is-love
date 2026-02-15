@@ -6,7 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.folkislove.love.exception.JwtAuthenticationException;
+import com.folkislove.love.exception.custom.JwtAuthenticationException;
 import com.folkislove.love.model.User;
 import com.folkislove.love.model.User.Role;
 

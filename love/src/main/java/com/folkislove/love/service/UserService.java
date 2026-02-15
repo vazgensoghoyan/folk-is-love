@@ -1,6 +1,6 @@
 package com.folkislove.love.service;
 
-import com.folkislove.love.exception.ResourceNotFoundException;
+import com.folkislove.love.exception.custom.ResourceNotFoundException;
 import com.folkislove.love.model.Tag;
 import com.folkislove.love.model.User;
 import com.folkislove.love.repository.UserRepository;

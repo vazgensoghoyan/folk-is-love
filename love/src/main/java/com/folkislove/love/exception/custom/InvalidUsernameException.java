@@ -1,4 +1,4 @@
-package com.folkislove.love.exception;
+package com.folkislove.love.exception.custom;
 
 public class InvalidUsernameException extends ValidationException {
 

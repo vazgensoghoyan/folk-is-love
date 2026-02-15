@@ -3,10 +3,11 @@ package com.folkislove.love.controller;
 import com.folkislove.love.dto.request.AuthRequest;
 import com.folkislove.love.dto.request.RegisterRequest;
 import com.folkislove.love.dto.response.UserResponse;
+import com.folkislove.love.exception.GlobalExceptionHandler;
 import com.folkislove.love.mapper.UserMapper;
 import com.folkislove.love.model.User;
 import com.folkislove.love.service.AuthService;
-import com.folkislove.love.exception.GlobalExceptionHandler;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;

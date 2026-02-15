@@ -1,6 +1,6 @@
 package com.folkislove.love.service;
 
-import com.folkislove.love.exception.JwtAuthenticationException;
+import com.folkislove.love.exception.custom.JwtAuthenticationException;
 import com.folkislove.love.model.User;
 import com.folkislove.love.model.User.Role;
 import org.junit.jupiter.api.BeforeEach;

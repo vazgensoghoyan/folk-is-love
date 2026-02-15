@@ -4,9 +4,9 @@ import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Component;
 
-import com.folkislove.love.exception.InvalidEmailException;
-import com.folkislove.love.exception.InvalidPasswordException;
-import com.folkislove.love.exception.InvalidUsernameException;
+import com.folkislove.love.exception.custom.InvalidEmailException;
+import com.folkislove.love.exception.custom.InvalidPasswordException;
+import com.folkislove.love.exception.custom.InvalidUsernameException;
 
 @Component
 public class UserCredentialsValidator {

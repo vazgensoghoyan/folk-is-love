@@ -1,7 +1,7 @@
 package com.folkislove.love.service;
 
 import com.folkislove.love.dto.response.CommentResponse;
-import com.folkislove.love.exception.ResourceNotFoundException;
+import com.folkislove.love.exception.custom.ResourceNotFoundException;
 import com.folkislove.love.mapper.CommentMapper;
 import com.folkislove.love.model.Comment;
 import com.folkislove.love.model.Post;

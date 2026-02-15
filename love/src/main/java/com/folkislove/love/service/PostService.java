@@ -5,7 +5,7 @@ import com.folkislove.love.model.Tag;
 import com.folkislove.love.repository.PostRepository;
 import com.folkislove.love.dto.request.PostRequest;
 import com.folkislove.love.dto.response.PostResponse;
-import com.folkislove.love.exception.ResourceNotFoundException;
+import com.folkislove.love.exception.custom.ResourceNotFoundException;
 import com.folkislove.love.mapper.PostMapper;
 
 import lombok.AllArgsConstructor;

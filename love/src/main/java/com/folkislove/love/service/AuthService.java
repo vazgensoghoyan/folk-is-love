@@ -3,11 +3,9 @@ package com.folkislove.love.service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.folkislove.love.exception.EmailAlreadyRegisteredException;
-import com.folkislove.love.dto.request.AuthRequest;
-import com.folkislove.love.dto.request.RegisterRequest;
-import com.folkislove.love.exception.AuthorizationException;
-import com.folkislove.love.exception.UsernameAlreadyTakenException;
+import com.folkislove.love.exception.custom.AuthorizationException;
+import com.folkislove.love.exception.custom.EmailAlreadyRegisteredException;
+import com.folkislove.love.exception.custom.UsernameAlreadyTakenException;
 import com.folkislove.love.model.User;
 import com.folkislove.love.model.User.Role;
 import com.folkislove.love.repository.UserRepository;

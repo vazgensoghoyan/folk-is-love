@@ -4,45 +4,62 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import lombok.extern.slf4j.Slf4j;
+import com.folkislove.love.dto.response.ErrorResponse;
 
-import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(AppException.class)
-    public ResponseEntity<Map<String, String>> handleAppException(AppException ex) {
-        log.warn("Application exception: {}", ex.getMessage());
+    public ResponseEntity<ErrorResponse> handleAppException(AppException ex) {
+        log.error("Application exception: {}", ex.getMessage());
 
-        return ResponseEntity
-                .status(ex.getStatus())
-                .body(Map.of("error", ex.getMessage()));
+        ErrorResponse response = ErrorResponse.builder()
+            .message(ex.getMessage())
+            .build();
+
+        return ResponseEntity.status(ex.getStatus()).body(response);
     }
-
+    
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
 
-        String errorMessage = ex.getBindingResult().getFieldErrors().stream()
+        String errorMessages = ex.getBindingResult().getFieldErrors().stream()
             .map(err -> err.getField() + ": " + err.getDefaultMessage())
-            .findFirst()
+            .reduce((a, b) -> a + "; " + b)
             .orElse(ex.getMessage());
 
-        return ResponseEntity.badRequest().body(Map.of("error", errorMessage));
+        log.error("Validation exception: {}", errorMessages);
+    
+        ErrorResponse response = ErrorResponse.builder()
+            .message(errorMessages)
+            .build();
+    
+        return ResponseEntity.badRequest().body(response);
     }
 
+
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Map<String, String>> handleRuntimeException(RuntimeException ex) {
+    public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException ex) {
         log.error("Runtime exception: {}", ex.getMessage(), ex);
-        return ResponseEntity.badRequest()
-                            .body(Map.of("error", ex.getMessage()));
+
+        ErrorResponse response = ErrorResponse.builder()
+            .message(ex.getMessage())
+            .build();
+
+        return ResponseEntity.badRequest().body(response);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, String>> handleOtherExceptions(Exception ex) {
+    public ResponseEntity<ErrorResponse> handleOtherExceptions(Exception ex) {
         log.error("Unexpected exception", ex);
-        return ResponseEntity.internalServerError()
-                            .body(Map.of("error", "An unexpected error occurred"));
+
+        ErrorResponse response = ErrorResponse.builder()
+            .message("An unexpected error occurred")
+            .build();
+
+        return ResponseEntity.internalServerError().body(response);
     }
 }
