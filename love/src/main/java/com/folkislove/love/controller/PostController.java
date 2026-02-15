@@ -7,6 +7,7 @@ import com.folkislove.love.model.Post;
 import com.folkislove.love.service.CurrentUserService;
 import com.folkislove.love.service.PostService;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 import org.springframework.data.domain.Page;
@@ -36,7 +37,9 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<PostResponse> createPost(@RequestBody PostRequest request) {
+    public ResponseEntity<PostResponse> createPost(
+        @Valid @RequestBody PostRequest request
+    ) {
         Post post = postService.createPost(request);
         PostResponse response = postMapper.toDto(post);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -51,8 +54,8 @@ public class PostController {
 
     @PutMapping("/{id}")
     public ResponseEntity<PostResponse> editPost(
-            @PathVariable Long id,
-            @RequestBody PostRequest request
+        @PathVariable Long id,
+        @Valid @RequestBody PostRequest request
     ) {
         String authorUsername = getAuthorUsernameByPostId(id);
 

@@ -38,8 +38,8 @@ public class CommentController {
 
     @PostMapping("/post/{postId}")
     public ResponseEntity<CommentResponse> addComment(
-            @PathVariable Long postId,
-            @RequestBody String content
+        @PathVariable Long postId,
+        @RequestBody String content
     ) {
         Comment comment = commentService.addComment(postId, content);
         CommentResponse response = commentMapper.toDto(comment);
@@ -48,8 +48,8 @@ public class CommentController {
 
     @PutMapping("/{commentId}")
     public ResponseEntity<CommentResponse> editComment(
-            @PathVariable Long commentId,
-            @RequestBody String content
+        @PathVariable Long commentId,
+        @RequestBody String content
     ) {
         String authorUsername = getUsernameByCommendId(commentId);
 

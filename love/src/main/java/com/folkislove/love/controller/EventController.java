@@ -5,6 +5,9 @@ import com.folkislove.love.dto.response.EventResponse;
 import com.folkislove.love.mapper.EventMapper;
 import com.folkislove.love.model.Event;
 import com.folkislove.love.service.EventService;
+
+import jakarta.validation.Valid;
+
 import com.folkislove.love.service.CurrentUserService;
 
 import lombok.AllArgsConstructor;
@@ -36,7 +39,9 @@ public class EventController {
     }
 
     @PostMapping
-    public ResponseEntity<EventResponse> createEvent(@RequestBody EventRequest request) {
+    public ResponseEntity<EventResponse> createEvent(
+        @Valid @RequestBody EventRequest request
+    ) {
         Event event = eventService.createEvent(request);
         EventResponse response = eventMapper.toDto(event);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -51,8 +56,8 @@ public class EventController {
 
     @PutMapping("/{id}")
     public ResponseEntity<EventResponse> editEvent(
-            @PathVariable Long id,
-            @RequestBody EventRequest request
+        @PathVariable Long id,
+        @Valid @RequestBody EventRequest request
     ) {
         String authorUsername = getAuthorUsernameById(id);
 
