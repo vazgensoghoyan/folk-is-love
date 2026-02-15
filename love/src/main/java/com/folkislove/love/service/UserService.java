@@ -28,6 +28,7 @@ public class UserService {
         User user = currentUserService.getCurrentUser();
         Tag tag = tagService.getTagById(tagId);
         user.getInterests().add(tag);
+        userRepository.save(user);
     }
 
     @Transactional
@@ -35,6 +36,7 @@ public class UserService {
         User user = currentUserService.getCurrentUser();
         Tag tag = tagService.getTagById(tagId);
         user.getInterests().remove(tag);
+        userRepository.save(user);
     }
     
     @Transactional

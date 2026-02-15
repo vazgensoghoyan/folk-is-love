@@ -2,6 +2,8 @@ package com.folkislove.love.controller;
 
 import com.folkislove.love.dto.request.EventRequest;
 import com.folkislove.love.dto.response.EventResponse;
+import com.folkislove.love.mapper.EventMapper;
+import com.folkislove.love.model.Event;
 import com.folkislove.love.service.EventService;
 import com.folkislove.love.service.CurrentUserService;
 
@@ -19,22 +21,32 @@ import java.util.List;
 public class EventController {
 
     private final EventService eventService;
+    private final EventMapper eventMapper;
     private final CurrentUserService currentUserService;
 
     @GetMapping
     public ResponseEntity<List<EventResponse>> getAllEvents() {
-        return ResponseEntity.ok(eventService.getAllEvents());
+        List<EventResponse> response = eventService
+            .getAllEvents()
+            .stream()
+            .map(eventMapper::toDto)
+            .toList();
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
     public ResponseEntity<EventResponse> createEvent(@RequestBody EventRequest request) {
-        EventResponse response = eventService.createEvent(request);
+        Event event = eventService.createEvent(request);
+        EventResponse response = eventMapper.toDto(event);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<EventResponse> getEvent(@PathVariable Long id) {
-        return ResponseEntity.ok(eventService.getById(id));
+        Event event = eventService.getEventById(id);
+        EventResponse response = eventMapper.toDto(event);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
@@ -42,18 +54,19 @@ public class EventController {
             @PathVariable Long id,
             @RequestBody EventRequest request
     ) {
-        String authorUsername = eventService.getById(id).getAuthorUsername();
+        String authorUsername = getAuthorUsernameById(id);
 
         currentUserService.checkIsOwner(authorUsername);
 
-        EventResponse response = eventService.editEvent(id, request);
+        Event event = eventService.editEvent(id, request);
+        EventResponse response = eventMapper.toDto(event);
 
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
-        String authorUsername = eventService.getById(id).getAuthorUsername();
+        String authorUsername = getAuthorUsernameById(id);
 
         currentUserService.checkIsOwnerOrAdmin(authorUsername);
 
@@ -63,11 +76,29 @@ public class EventController {
 
     @GetMapping("/upcoming")
     public ResponseEntity<List<EventResponse>> getUpcomingEvents() {
-        return ResponseEntity.ok(eventService.getUpcomingEvents());
+        List<EventResponse> response = eventService
+            .getUpcomingEvents()
+            .stream()
+            .map(eventMapper::toDto)
+            .toList();
+    
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/tag/{tagId}")
     public ResponseEntity<List<EventResponse>> getEventsByTag(@PathVariable Long tagId) {
-        return ResponseEntity.ok(eventService.getEventsByTag(tagId));
+        List<EventResponse> response = eventService
+            .getEventsByTag(tagId)
+            .stream()
+            .map(eventMapper::toDto)
+            .toList();
+
+        return ResponseEntity.ok(response);
+    }
+
+    // private helper
+
+    private String getAuthorUsernameById(Long id) {
+        return eventService.getEventById(id).getAuthor().getUsername();
     }
 }

@@ -67,5 +67,4 @@ public class Event {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
-
 }

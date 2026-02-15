@@ -45,5 +45,4 @@ public class Tag {
     @ManyToMany(mappedBy = "interests", fetch = FetchType.LAZY)
     @Builder.Default
     private Set<User> users = new HashSet<>();
-    
 }

@@ -62,5 +62,4 @@ public class Post {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
-
 }
