@@ -1,7 +1,6 @@
 package com.folkislove.love.controller;
 
 import com.folkislove.love.dto.response.TagResponse;
-import com.folkislove.love.model.Tag;
 import com.folkislove.love.service.CurrentUserService;
 import com.folkislove.love.service.TagService;
 

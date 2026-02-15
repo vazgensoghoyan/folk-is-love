@@ -10,6 +10,7 @@ import lombok.Data;
 @Builder
 public class PostResponse {
     
+    private Long id;
     private String title;
     private String content;
     private String authorUsername;

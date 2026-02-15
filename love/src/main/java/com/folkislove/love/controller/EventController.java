@@ -43,7 +43,7 @@ public class EventController {
             @RequestBody EventRequest request
     ) {
         String authorUsername = eventService.getById(id).getAuthorUsername();
-        if (currentUserService.isOwnerOrAdmin(authorUsername)) {
+        if (!currentUserService.isOwnerOrAdmin(authorUsername)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -55,7 +55,7 @@ public class EventController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
         String authorUsername = eventService.getById(id).getAuthorUsername();
-        if (currentUserService.isOwnerOrAdmin(authorUsername)) {
+        if (!currentUserService.isOwnerOrAdmin(authorUsername)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 

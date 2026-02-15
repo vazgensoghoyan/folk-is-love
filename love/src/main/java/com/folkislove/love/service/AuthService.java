@@ -3,6 +3,9 @@ package com.folkislove.love.service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.folkislove.love.exception.EmailAlreadyRegisteredException;
+import com.folkislove.love.exception.InvalidCredentialsException;
+import com.folkislove.love.exception.UsernameAlreadyTakenException;
 import com.folkislove.love.model.User;
 import com.folkislove.love.model.User.Role;
 import com.folkislove.love.repository.UserRepository;
@@ -21,10 +24,10 @@ public class AuthService {
 
     public String login(String username, String password) {
         User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new RuntimeException("Invalid username"));
+                    .orElseThrow(() -> new InvalidCredentialsException());
 
         if (!passwordEncoder.matches(password, user.getPasswordHash())) {
-            throw new RuntimeException("Invalid password");
+            throw new InvalidCredentialsException();
         }
 
         return jwtService.generateToken(user.getUsername(), user.getRole().name());
@@ -34,6 +37,14 @@ public class AuthService {
         credentialsValidator.validateUsername(username);
         credentialsValidator.validateEmail(email);
         credentialsValidator.validatePassword(password);
+
+        if (userRepository.existsByUsername(username)) {
+            throw new UsernameAlreadyTakenException(username);
+        }
+
+        if (userRepository.existsByEmail(email)) {
+            throw new EmailAlreadyRegisteredException(email);
+        }
 
         User user = User.builder()
             .username(username)
