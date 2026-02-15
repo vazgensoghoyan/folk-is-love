@@ -32,13 +32,6 @@ public class PostService {
     @Transactional(readOnly = true)
     public Page<Post> getPostsByTag(Long tagId, Pageable pageable) {
         return postRepository.findAllByTags_Id(tagId, pageable);
-
-        /*Tag tag = tagService.getTagById(tagId);
-
-        Set<Post> posts = tag.getPosts();
-        return posts.stream()
-                .map(postMapper::toDto)
-                .collect(Collectors.toList());*/
     }
 
     @Transactional(readOnly = true)

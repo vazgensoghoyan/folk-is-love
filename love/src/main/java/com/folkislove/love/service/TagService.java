@@ -1,17 +1,15 @@
 package com.folkislove.love.service;
 
-import com.folkislove.love.dto.response.TagResponse;
 import com.folkislove.love.exception.custom.ResourceNotFoundException;
 import com.folkislove.love.exception.custom.TagAlreadyExistsException;
 import com.folkislove.love.exception.custom.TagInUseException;
-import com.folkislove.love.mapper.TagMapper;
 import com.folkislove.love.model.Tag;
 import com.folkislove.love.repository.TagRepository;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,8 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TagService {
 
     private final TagRepository tagRepository;
-    private final TagMapper tagMapper;
-    //private final CurrentUserService currentUserService;
+    private final CurrentUserService currentUserService;
 
     @Transactional(readOnly = true)
     public Tag getTagById(Long id) {
@@ -31,15 +28,12 @@ public class TagService {
     }
 
     @Transactional(readOnly = true)
-    public List<Tag> getAllTags() {
-        return tagRepository
-                .findAll()
-                .stream()
-                .toList();
+    public Page<Tag> getAllTags(Pageable pageable) {
+        return tagRepository.findAll(pageable);
     }
 
-    public TagResponse createTag(String tagName) {
-        //currentUserService.checkIsAdmin();
+    public Tag createTag(String tagName) {
+        currentUserService.checkIsAdmin();
 
         String normalized = normalize(tagName);
 
@@ -51,12 +45,11 @@ public class TagService {
                 .name(normalized)
                 .build();
 
-        Tag response = tagRepository.save(tag);
-        return tagMapper.toDto(response);
+        return tagRepository.save(tag);
     }
 
     public Tag renameTag(Long tagId, String newName) {
-        //currentUserService.checkIsAdmin();
+        currentUserService.checkIsAdmin();
 
         Tag tag = getTagById(tagId);
         String normalizedName = normalize(newName);
@@ -70,7 +63,7 @@ public class TagService {
     }
 
     public void deleteTag(Long tagId) {
-        //currentUserService.checkIsAdmin();
+        currentUserService.checkIsAdmin();
 
         Tag tag = getTagById(tagId);
 

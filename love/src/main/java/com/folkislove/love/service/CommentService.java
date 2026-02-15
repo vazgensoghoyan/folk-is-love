@@ -1,25 +1,22 @@
 package com.folkislove.love.service;
 
-import com.folkislove.love.dto.response.CommentResponse;
 import com.folkislove.love.exception.custom.ResourceNotFoundException;
-import com.folkislove.love.mapper.CommentMapper;
 import com.folkislove.love.model.Comment;
 import com.folkislove.love.model.Post;
 import com.folkislove.love.repository.CommentRepository;
 
 import lombok.AllArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final CommentMapper commentMapper;
     private final PostService postService;
     private final CurrentUserService currentUserService;
 
@@ -30,21 +27,17 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommentResponse> getCommentsByPostId(Long postId) {
-        Post post = postService.getPostById(postId);
-
-        return post.getComments().stream()
-                .map(commentMapper::toDto)
-                .collect(Collectors.toList());
+    public Page<Comment> getCommentsByPostId(Long postId, Pageable pageable) {
+        return commentRepository.findByPostId(postId, pageable);
     }
 
     @Transactional(readOnly = true)
-    public CommentResponse getById(Long eventId) {
-        return commentMapper.toDto(findCommentById(eventId));
+    public Comment getCommentById(Long eventId) {
+        return findCommentById(eventId);
     }
 
     @Transactional
-    public CommentResponse addComment(Long postId, String content) {
+    public Comment addComment(Long postId, String content) {
         Post post = postService.getPostById(postId);
 
         Comment comment = Comment.builder()
@@ -53,19 +46,17 @@ public class CommentService {
                 .content(content)
                 .build();
 
-        Comment saved = commentRepository.save(comment);
-        return commentMapper.toDto(saved);
+        return commentRepository.save(comment);
     }
 
     @Transactional
-    public CommentResponse editComment(Long commentId, String content) {
+    public Comment editComment(Long commentId, String content) {
         Comment comment = findCommentById(commentId);
 
         currentUserService.checkIsOwnerOrAdmin(comment.getAuthor().getUsername());
 
         comment.setContent(content);
-        Comment saved = commentRepository.save(comment);
-        return commentMapper.toDto(saved);
+        return commentRepository.save(comment);
     }
 
     @Transactional
