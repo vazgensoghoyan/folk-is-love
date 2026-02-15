@@ -9,11 +9,11 @@ import com.folkislove.love.service.PostService;
 
 import lombok.AllArgsConstructor;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -25,15 +25,21 @@ public class PostController {
     private final CurrentUserService currentUserService;
 
     @GetMapping
-    public ResponseEntity<List<PostResponse>> getAllPosts() {
-        List<PostResponse> posts = postService.getAllPosts();
+    public ResponseEntity<Page<PostResponse>> getAllPosts(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<PostResponse> posts = postService
+            .getAllPosts(PageRequest.of(page, size))
+            .map(postMapper::toDto);
         return ResponseEntity.ok(posts);
     }
 
     @PostMapping
     public ResponseEntity<PostResponse> createPost(@RequestBody PostRequest request) {
-        PostResponse post = postService.createPost(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(post);
+        Post post = postService.createPost(request);
+        PostResponse response = postMapper.toDto(post);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{id}")
@@ -52,8 +58,9 @@ public class PostController {
 
         currentUserService.checkIsOwner(authorUsername);
 
-        PostResponse updated = postService.editPost(id, request);
-        return ResponseEntity.ok(updated);
+        Post updated = postService.editPost(id, request);
+        PostResponse response = postMapper.toDto(updated);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
@@ -67,8 +74,14 @@ public class PostController {
     }
 
     @GetMapping("/tag/{tagId}")
-    public ResponseEntity<List<PostResponse>> getPostsByTag(@PathVariable Long tagId) {
-        List<PostResponse> posts = postService.getPostsByTag(tagId);
+    public ResponseEntity<Page<PostResponse>> getPostsByTag(
+        @PathVariable Long tagId,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<PostResponse> posts = postService
+            .getPostsByTag(tagId, PageRequest.of(page, size))
+            .map(postMapper::toDto);
         return ResponseEntity.ok(posts);
     }
 

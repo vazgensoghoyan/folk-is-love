@@ -4,15 +4,15 @@ import com.folkislove.love.model.Post;
 import com.folkislove.love.model.Tag;
 import com.folkislove.love.repository.PostRepository;
 import com.folkislove.love.dto.request.PostRequest;
-import com.folkislove.love.dto.response.PostResponse;
 import com.folkislove.love.exception.custom.ResourceNotFoundException;
-import com.folkislove.love.mapper.PostMapper;
 
 import lombok.AllArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -23,23 +23,22 @@ public class PostService {
     private final PostRepository postRepository;
     private final TagService tagService;
     private final CurrentUserService currentUserService;
-    private final PostMapper postMapper;
 
     @Transactional(readOnly = true)
-    public List<PostResponse> getAllPosts() {
-        return postRepository.findAll().stream()
-                .map(postMapper::toDto)
-                .collect(Collectors.toList());
+    public Page<Post> getAllPosts(Pageable pageable) {
+        return postRepository.findAll(pageable);
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse> getPostsByTag(Long tagId) {
-        Tag tag = tagService.getTagById(tagId);
+    public Page<Post> getPostsByTag(Long tagId, Pageable pageable) {
+        return postRepository.findAllByTags_Id(tagId, pageable);
+
+        /*Tag tag = tagService.getTagById(tagId);
 
         Set<Post> posts = tag.getPosts();
         return posts.stream()
                 .map(postMapper::toDto)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());*/
     }
 
     @Transactional(readOnly = true)
@@ -49,7 +48,7 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponse createPost(PostRequest request) {
+    public Post createPost(PostRequest request) {
         Set<Tag> tags = request
                 .getTagIds()
                 .stream()
@@ -63,12 +62,11 @@ public class PostService {
                 .tags(tags)
                 .build();
 
-        Post saved = postRepository.save(post);
-        return postMapper.toDto(saved);
+        return postRepository.save(post);
     }
 
     @Transactional
-    public PostResponse editPost(Long postId, PostRequest request) {
+    public Post editPost(Long postId, PostRequest request) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post", postId));
 
@@ -87,8 +85,7 @@ public class PostService {
             post.setTags(tags);
         }
 
-        Post saved = postRepository.save(post);
-        return postMapper.toDto(saved);
+        return postRepository.save(post);
     }
 
     @Transactional

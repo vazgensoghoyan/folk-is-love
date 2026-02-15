@@ -9,11 +9,11 @@ import com.folkislove.love.service.CurrentUserService;
 
 import lombok.AllArgsConstructor;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/events")
@@ -25,13 +25,13 @@ public class EventController {
     private final CurrentUserService currentUserService;
 
     @GetMapping
-    public ResponseEntity<List<EventResponse>> getAllEvents() {
-        List<EventResponse> response = eventService
-            .getAllEvents()
-            .stream()
-            .map(eventMapper::toDto)
-            .toList();
-
+    public ResponseEntity<Page<EventResponse>> getAllEvents(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<EventResponse> response = eventService
+            .getAllEvents(PageRequest.of(page, size))
+            .map(eventMapper::toDto);
         return ResponseEntity.ok(response);
     }
 
@@ -75,23 +75,26 @@ public class EventController {
     }
 
     @GetMapping("/upcoming")
-    public ResponseEntity<List<EventResponse>> getUpcomingEvents() {
-        List<EventResponse> response = eventService
-            .getUpcomingEvents()
-            .stream()
-            .map(eventMapper::toDto)
-            .toList();
-    
+    public ResponseEntity<Page<EventResponse>> getUpcomingEvents(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<EventResponse> response = eventService
+            .getUpcomingEvents(PageRequest.of(page, size))
+            .map(eventMapper::toDto);
+        
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/tag/{tagId}")
-    public ResponseEntity<List<EventResponse>> getEventsByTag(@PathVariable Long tagId) {
-        List<EventResponse> response = eventService
-            .getEventsByTag(tagId)
-            .stream()
-            .map(eventMapper::toDto)
-            .toList();
+    public ResponseEntity<Page<EventResponse>> getEventsByTag(
+        @PathVariable Long tagId,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<EventResponse> response = eventService
+            .getEventsByTag(tagId, PageRequest.of(page, size))
+            .map(eventMapper::toDto);
 
         return ResponseEntity.ok(response);
     }

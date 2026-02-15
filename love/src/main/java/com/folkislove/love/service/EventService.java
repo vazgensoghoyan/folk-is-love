@@ -8,11 +8,13 @@ import com.folkislove.love.exception.custom.InvalidEventDateException;
 import com.folkislove.love.exception.custom.ResourceNotFoundException;
 
 import lombok.AllArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,9 +27,8 @@ public class EventService {
     private final CurrentUserService currentUserService;
 
     @Transactional(readOnly = true)
-    public List<Event> getAllEvents() {
-        return eventRepository.findAll().stream()
-            .collect(Collectors.toList());
+    public Page<Event> getAllEvents(Pageable pageable) {
+        return eventRepository.findAll(pageable);
     }
 
     @Transactional(readOnly = true)
@@ -37,19 +38,14 @@ public class EventService {
     }
 
     @Transactional(readOnly = true)
-    public List<Event> getEventsByTag(Long tagId) {
-        return tagService
-            .getTagById(tagId)
-            .getEvents()
-            .stream()
-            .collect(Collectors.toList());
+    public Page<Event> getEventsByTag(Long tagId, Pageable pagable) {
+        return eventRepository.findByTags_Id(tagId, pagable);
     }
 
     @Transactional(readOnly = true)
-    public List<Event> getUpcomingEvents() {
+    public Page<Event> getUpcomingEvents(Pageable pageable) {
         LocalDateTime now = LocalDateTime.now();
-        return eventRepository.findByDateTimeAfter(now).stream()
-            .collect(Collectors.toList());
+        return eventRepository.findByDateTimeAfter(now, pageable);
     }
 
     @Transactional
