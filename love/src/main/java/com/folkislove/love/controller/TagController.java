@@ -1,6 +1,8 @@
 package com.folkislove.love.controller;
 
 import com.folkislove.love.dto.response.TagResponse;
+import com.folkislove.love.mapper.TagMapper;
+import com.folkislove.love.model.Tag;
 import com.folkislove.love.service.CurrentUserService;
 import com.folkislove.love.service.TagService;
 
@@ -22,18 +24,21 @@ import java.util.List;
 public class TagController {
 
     private final TagService tagService;
+    private final TagMapper tagMapper;
     private final CurrentUserService currentUserService;
 
     @GetMapping
     public ResponseEntity<List<TagResponse>> getAllTags() {
-        List<TagResponse> tags = tagService.getAllTags();
-        return ResponseEntity.ok(tags);
+        List<Tag> tags = tagService.getAllTags();
+        List<TagResponse> response = tags.stream().map(tagMapper::toDto).toList();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{tagId}")
     public ResponseEntity<TagResponse> getTagById(@PathVariable Long tagId) {
-        TagResponse tag = tagService.getTagById(tagId);
-        return ResponseEntity.ok(tag);
+        Tag tag = tagService.getTagById(tagId);
+        TagResponse response = tagMapper.toDto(tag);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/admin")
@@ -49,8 +54,9 @@ public class TagController {
         @RequestParam String newName
     ) {
         currentUserService.checkIsAdmin();
-        TagResponse tag = tagService.renameTag(tagId, newName);
-        return ResponseEntity.ok(tag);
+        Tag tag = tagService.renameTag(tagId, newName);
+        TagResponse response = tagMapper.toDto(tag);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/admin/{tagId}")

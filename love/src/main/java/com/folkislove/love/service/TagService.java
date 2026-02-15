@@ -1,6 +1,7 @@
 package com.folkislove.love.service;
 
 import com.folkislove.love.dto.response.TagResponse;
+import com.folkislove.love.exception.ResourceNotFoundException;
 import com.folkislove.love.mapper.TagMapper;
 import com.folkislove.love.model.Tag;
 import com.folkislove.love.repository.TagRepository;
@@ -22,19 +23,21 @@ public class TagService {
     private final CurrentUserService currentUserService;
 
     @Transactional(readOnly = true)
-    public TagResponse getTagById(Long id) {
-        Tag tag = tagRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tag not found: " + id));
+    public Tag getTagById(Long id) {
+        return tagRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tag", id));
+    }
 
-        return tagMapper.toDto(tag);
+    public Tag getTagOrThrow(Long id) {
+        return tagRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Tag not found: " + id));
     }
 
     @Transactional(readOnly = true)
-    public List<TagResponse> getAllTags() {
+    public List<Tag> getAllTags() {
         return tagRepository
                 .findAll()
                 .stream()
-                .map(tagMapper::toDto)
                 .toList();
     }
 
@@ -55,7 +58,7 @@ public class TagService {
         return tagMapper.toDto(response);
     }
 
-    public TagResponse renameTag(Long tagId, String newName) {
+    public Tag renameTag(Long tagId, String newName) {
         currentUserService.checkIsAdmin();
 
         Tag tag = getTagOrThrow(tagId);
@@ -66,7 +69,7 @@ public class TagService {
         }
 
         tag.setName(normalized);
-        return tagMapper.toDto(tag);
+        return tag;
     }
 
     public void deleteTag(Long tagId) {
@@ -81,13 +84,6 @@ public class TagService {
         }
 
         tagRepository.delete(tag);
-    }
-
-    // private helpers
-
-    private Tag getTagOrThrow(Long id) {
-        return tagRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Tag not found: " + id));
     }
 
     private String normalize(String name) {

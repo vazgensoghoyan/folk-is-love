@@ -3,9 +3,9 @@ package com.folkislove.love.service;
 import com.folkislove.love.model.Event;
 import com.folkislove.love.model.Tag;
 import com.folkislove.love.repository.EventRepository;
-import com.folkislove.love.repository.TagRepository;
 import com.folkislove.love.dto.request.EventRequest;
 import com.folkislove.love.dto.response.EventResponse;
+import com.folkislove.love.exception.ResourceNotFoundException;
 import com.folkislove.love.mapper.EventMapper;
 
 import lombok.AllArgsConstructor;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class EventService {
 
     private final EventRepository eventRepository;
-    private final TagRepository tagRepository;
+    private final TagService tagService;
     private final CurrentUserService currentUserService;
     private final EventMapper eventMapper;
 
@@ -40,10 +40,10 @@ public class EventService {
 
     @Transactional(readOnly = true)
     public List<EventResponse> getEventsByTag(Long tagId) {
-        Tag tag = tagRepository.findById(tagId)
-                .orElseThrow(() -> new RuntimeException("Tag not found: " + tagId));
-
-        return tag.getEvents().stream()
+        return tagService
+                .getTagById(tagId)
+                .getEvents()
+                .stream()
                 .map(eventMapper::toDto)
                 .collect(Collectors.toList());
     }
@@ -102,14 +102,14 @@ public class EventService {
 
     private Event findEventById(Long eventId) {
         return eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Event not found: " + eventId));
+                .orElseThrow(() -> new ResourceNotFoundException("Event", eventId));
     }
 
     private Set<Tag> getTagsByIds(Set<Long> tagIds) {
         if (tagIds == null || tagIds.isEmpty()) return Set.of();
+
         return tagIds.stream()
-                .map(id -> tagRepository.findById(id)
-                        .orElseThrow(() -> new RuntimeException("Tag not found: " + id)))
+                .map(tagService::getTagById)
                 .collect(Collectors.toSet());
     }
 }

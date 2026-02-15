@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.folkislove.love.dto.response.UserResponse;
+import com.folkislove.love.mapper.UserMapper;
+import com.folkislove.love.model.User;
 import com.folkislove.love.service.CurrentUserService;
 import com.folkislove.love.service.UserService;
 
@@ -16,16 +18,21 @@ import lombok.AllArgsConstructor;
 public class UserController {
 
     private final UserService userService;
+    private final UserMapper userMapper;
     private final CurrentUserService currentUserService;
 
     @GetMapping("/me")
     public ResponseEntity<UserResponse> getCurrentUser() {
-        return ResponseEntity.ok(userService.getCurrentUser());
+        User current = currentUserService.getCurrentUser();
+        UserResponse response = userMapper.toDto(current);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{username}")
     public ResponseEntity<UserResponse> getUserByUsername(@PathVariable String username) {
-        return ResponseEntity.ok(userService.getUserByUsername(username));
+        User current = userService.getUserByUsername(username);
+        UserResponse response = userMapper.toDto(current);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/interests/{tagId}")

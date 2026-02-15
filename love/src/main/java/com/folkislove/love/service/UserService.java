@@ -5,9 +5,6 @@ import com.folkislove.love.model.User;
 import com.folkislove.love.repository.TagRepository;
 import com.folkislove.love.repository.UserRepository;
 
-import com.folkislove.love.dto.response.UserResponse;
-import com.folkislove.love.mapper.UserMapper;
-
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,19 +16,11 @@ public class UserService {
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
     private final CurrentUserService currentUserService;
-    private final UserMapper userMapper;
 
     @Transactional(readOnly = true)
-    public UserResponse getCurrentUser() {
-        User user = currentUserService.getCurrentUser();
-        return userMapper.toDto(user);
-    }
-
-    @Transactional(readOnly = true)
-    public UserResponse getUserByUsername(String username) {
-        User user = userRepository.findByUsername(username)
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username)
             .orElseThrow(() -> new RuntimeException("User not found: " + username));
-        return userMapper.toDto(user);
     }
 
     @Transactional

@@ -1,5 +1,7 @@
 package com.folkislove.love.service;
 
+import com.folkislove.love.exception.AccessDeniedException;
+import com.folkislove.love.exception.AuthorizationException;
 import com.folkislove.love.model.User;
 import com.folkislove.love.repository.UserRepository;
 
@@ -14,7 +16,7 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class CurrentUserService {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     public String getCurrentUsername() {
         Authentication auth = getAuthentication();
@@ -27,8 +29,7 @@ public class CurrentUserService {
 
     public User getCurrentUser() {
         String username = getCurrentUsername();
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        return userService.getUserByUsername(username);
     }
 
     public boolean isAdmin() {
@@ -42,7 +43,7 @@ public class CurrentUserService {
 
     public void checkIsAdmin() {
         if (!isAdmin()) {
-            throw new RuntimeException("You are not admin");
+            throw new AccessDeniedException("You are not admin");
         }
     }
 
@@ -52,7 +53,7 @@ public class CurrentUserService {
 
     public void checkOwnerOrAdmin(String username) {
         if (!isOwnerOrAdmin(username)) {
-            throw new RuntimeException("You don't have permission to access this resource");
+            throw new AccessDeniedException("You don't have permission to access this resource");
         }
     }
     
@@ -61,7 +62,7 @@ public class CurrentUserService {
     private Authentication getAuthentication() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated() || auth.getPrincipal() == null || "anonymousUser".equals(auth.getPrincipal())) {
-            throw new RuntimeException("User is not authenticated");
+            throw new AuthorizationException("User is not authenticated");
         }
         return auth;
     }
