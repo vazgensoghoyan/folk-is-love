@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.folkislove.love.exception.JwtAuthenticationException;
+import com.folkislove.love.model.User;
 import com.folkislove.love.model.User.Role;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.Set;
 
 import javax.crypto.SecretKey;
 
@@ -29,13 +31,15 @@ public class JwtService {
         expirationMs = expiration;
     }
 
-    public String generateToken(String username, String role) {
+    public String generateToken(User user) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expirationMs);
 
         return Jwts.builder()
-            .subject(username)
-            .claim("role", role)
+            .subject(user.getUsername())
+            .claim("role", user.getRole().name())
+            .issuer("folkislove-api")
+            .audience().add("folkislove-client").and()
             .issuedAt(now)
             .expiration(expiryDate)
             .signWith(secretKey)
@@ -62,11 +66,22 @@ public class JwtService {
 
     private Claims parseClaims(String token) {
         try {
-            return Jwts.parser()
+            Claims claims = Jwts.parser()
                 .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
+
+            if (!"folkislove-api".equals(claims.getIssuer())) {
+                throw new JwtAuthenticationException("Invalid JWT issuer");
+            }
+            
+            Set<String> audience = claims.getAudience();
+            if (audience == null || !audience.contains("folkislove-client")) {
+                throw new JwtAuthenticationException("Invalid JWT audience");
+            }
+
+            return claims;
 
         } catch (ExpiredJwtException e) {
             throw new JwtAuthenticationException("JWT token expired");

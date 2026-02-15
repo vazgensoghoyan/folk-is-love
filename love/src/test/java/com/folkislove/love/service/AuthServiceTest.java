@@ -54,7 +54,7 @@ class AuthServiceTest {
 
             when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.of(user));
             when(passwordEncoder.matches(PASSWORD, ENCODED_PASSWORD)).thenReturn(true);
-            when(jwtService.generateToken(USERNAME, Role.USER.name())).thenReturn(JWT_TOKEN);
+            when(jwtService.generateToken(user)).thenReturn(JWT_TOKEN);
 
             String token = authService.login(USERNAME, PASSWORD);
 

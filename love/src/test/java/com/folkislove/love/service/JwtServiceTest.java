@@ -1,6 +1,7 @@
 package com.folkislove.love.service;
 
 import com.folkislove.love.exception.JwtAuthenticationException;
+import com.folkislove.love.model.User;
 import com.folkislove.love.model.User.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,38 +22,43 @@ class JwtServiceTest {
 
     @Test
     void generateTokenShouldIncludeUsernameAndRole() {
-        String token = jwtService.generateToken("user1", "USER");
+        User user = generateUser();
+
+        String token = jwtService.generateToken(user);
         assertNotNull(token);
 
         String username = jwtService.extractUsername(token);
         Role role = jwtService.extractRole(token);
 
-        assertEquals("user1", username);
-        assertEquals(Role.USER, role);
+        assertEquals(user.getUsername(), username);
+        assertEquals(user.getRole(), role);
     }
 
     @Test
     void isTokenValidShouldReturnTrueForValidToken() {
-        String token = jwtService.generateToken("user1", "USER");
-        assertTrue(jwtService.isTokenValid(token, "user1"));
+        User user = generateUser();
+        String token = jwtService.generateToken(user);
+        assertTrue(jwtService.isTokenValid(token, user.getUsername()));
     }
 
     @Test
     void isTokenValidShouldReturnFalseForWrongUsername() {
-        String token = jwtService.generateToken("user1", "USER");
+        User user = generateUser();
+        String token = jwtService.generateToken(user);
         assertFalse(jwtService.isTokenValid(token, "otherUser"));
     }
 
     @Test
     void isTokenValidShouldReturnFalseForExpiredToken() throws InterruptedException {
         var shortLivedService = new JwtService(SECRET, 100); // 0.1 секунда
-        String token = shortLivedService.generateToken("user1", "USER");
+        User user = generateUser();
+        String token = shortLivedService.generateToken(user);
 
         // Ждем пока токен истечет
         Thread.sleep(200);
 
         assertThrows(JwtAuthenticationException.class, () -> 
-            shortLivedService.isTokenValid(token, "user1")
+            shortLivedService.isTokenValid(token, user.getUsername())
         );
     }
 
@@ -70,5 +76,15 @@ class JwtServiceTest {
         var exc = assertThrows(RuntimeException.class,
                 () -> jwtService.extractRole(invalidToken));
         assertTrue(exc.getMessage().contains("Invalid JWT token"));
+    }
+
+    // private helper
+
+    User generateUser() {
+        return User
+            .builder()
+            .username("user1")
+            .role(Role.USER)
+            .build();
     }
 }

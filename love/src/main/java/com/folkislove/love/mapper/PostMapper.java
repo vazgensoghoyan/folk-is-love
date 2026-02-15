@@ -40,5 +40,4 @@ public interface PostMapper {
         if (comments == null) return 0;
         return comments.size();
     }
-
 }

@@ -25,5 +25,4 @@ public interface CommentMapper {
     default boolean updatedAtToEdited(java.time.LocalDateTime updatedAt) {
         return updatedAt != null;
     }
-
 }
