@@ -2,6 +2,8 @@ package com.folkislove.love.service;
 
 import com.folkislove.love.dto.response.TagResponse;
 import com.folkislove.love.exception.ResourceNotFoundException;
+import com.folkislove.love.exception.TagAlreadyExistsException;
+import com.folkislove.love.exception.TagInUseException;
 import com.folkislove.love.mapper.TagMapper;
 import com.folkislove.love.model.Tag;
 import com.folkislove.love.repository.TagRepository;
@@ -20,17 +22,12 @@ public class TagService {
 
     private final TagRepository tagRepository;
     private final TagMapper tagMapper;
-    private final CurrentUserService currentUserService;
+    //private final CurrentUserService currentUserService;
 
     @Transactional(readOnly = true)
     public Tag getTagById(Long id) {
         return tagRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tag", id));
-    }
-
-    public Tag getTagOrThrow(Long id) {
-        return tagRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Tag not found: " + id));
     }
 
     @Transactional(readOnly = true)
@@ -41,13 +38,13 @@ public class TagService {
                 .toList();
     }
 
-    public TagResponse createTag(String name) {
-        currentUserService.checkIsAdmin();
+    public TagResponse createTag(String tagName) {
+        //currentUserService.checkIsAdmin();
 
-        String normalized = normalize(name);
+        String normalized = normalize(tagName);
 
         if (tagRepository.existsByNameIgnoreCase(normalized)) {
-            throw new IllegalArgumentException("Tag already exists");
+            throw new TagAlreadyExistsException(tagName);
         }
 
         Tag tag = Tag.builder()
@@ -59,28 +56,28 @@ public class TagService {
     }
 
     public Tag renameTag(Long tagId, String newName) {
-        currentUserService.checkIsAdmin();
+        //currentUserService.checkIsAdmin();
 
-        Tag tag = getTagOrThrow(tagId);
-        String normalized = normalize(newName);
+        Tag tag = getTagById(tagId);
+        String normalizedName = normalize(newName);
 
-        if (tagRepository.existsByNameIgnoreCase(normalized)) {
-            throw new IllegalArgumentException("Another tag with this name already exists");
+        if (tagRepository.existsByNameIgnoreCase(normalizedName)) {
+            throw new TagAlreadyExistsException(normalizedName);
         }
 
-        tag.setName(normalized);
+        tag.setName(normalizedName);
         return tag;
     }
 
     public void deleteTag(Long tagId) {
-        currentUserService.checkIsAdmin();
+        //currentUserService.checkIsAdmin();
 
-        Tag tag = getTagOrThrow(tagId);
+        Tag tag = getTagById(tagId);
 
         if (!tag.getPosts().isEmpty() ||
             !tag.getEvents().isEmpty() ||
             !tag.getUsers().isEmpty()) {
-            throw new IllegalStateException("Cannot delete tag that is in use. Merge it instead.");
+            throw new TagInUseException(tag.getName());
         }
 
         tagRepository.delete(tag);

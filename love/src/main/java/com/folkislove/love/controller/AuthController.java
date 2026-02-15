@@ -28,14 +28,14 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest request) {
-        String token = authService.login(request);
+        String token = authService.login(request.getUsername(), request.getPassword());
         var response = AuthResponse.builder().token(token).build();
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
-        User user = authService.register(request);
+        User user = authService.register(request.getUsername(), request.getEmail(), request.getPassword());
         return ResponseEntity.status(HttpStatus.CREATED).body(userMapper.toDto(user));
     }
 }

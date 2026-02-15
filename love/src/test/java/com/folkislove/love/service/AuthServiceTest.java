@@ -23,8 +23,7 @@ class AuthServiceTest {
     private static final String ENCODED_PASSWORD = "encodedPassword";
     private static final String JWT_TOKEN = "jwt-token";
     private static final String INVALID_USERNAME = "unknown";
-    private static final String INVALID_USERNAME_MSG = "Invalid username";
-    private static final String INVALID_PASSWORD_MSG = "Invalid password";
+    private static final String ERROR_MSG = "Invalid username or password";
     private static final String REGISTER_PASSWORD = "pass123!";
     private static final String INVALID_REGISTER_USERNAME = "bad_user";
     private static final String WRONG_PASSWORD = "wrong";
@@ -70,7 +69,7 @@ class AuthServiceTest {
             RuntimeException ex = assertThrows(RuntimeException.class,
                     () -> authService.login(INVALID_USERNAME, PASSWORD));
 
-            assertEquals(INVALID_USERNAME_MSG, ex.getMessage());
+            assertEquals(ERROR_MSG, ex.getMessage());
         }
 
         @Test
@@ -85,7 +84,7 @@ class AuthServiceTest {
 
             RuntimeException ex = assertThrows(RuntimeException.class,
                     () -> authService.login(USERNAME, WRONG_PASSWORD));
-            assertEquals(INVALID_PASSWORD_MSG, ex.getMessage());
+            assertEquals(ERROR_MSG, ex.getMessage());
         }
 
     }
@@ -117,7 +116,7 @@ class AuthServiceTest {
 
         @Test
         void registerShouldThrowWhenUsernameInvalid() {
-            doThrow(new IllegalArgumentException(INVALID_USERNAME_MSG))
+            doThrow(new IllegalArgumentException(ERROR_MSG))
                     .when(credentialsValidator).validateUsername(INVALID_REGISTER_USERNAME);
 
             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
@@ -127,7 +126,7 @@ class AuthServiceTest {
                             REGISTER_PASSWORD
                         ));
 
-            assertEquals(INVALID_USERNAME_MSG, ex.getMessage());
+            assertEquals(ERROR_MSG, ex.getMessage());
         }
 
     }

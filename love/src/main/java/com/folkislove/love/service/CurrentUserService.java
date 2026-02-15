@@ -2,7 +2,9 @@ package com.folkislove.love.service;
 
 import com.folkislove.love.exception.AccessDeniedException;
 import com.folkislove.love.exception.AuthorizationException;
+import com.folkislove.love.exception.ResourceNotFoundException;
 import com.folkislove.love.model.User;
+import com.folkislove.love.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
 
@@ -15,7 +17,7 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class CurrentUserService {
 
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     public String getCurrentUsername() {
         Authentication auth = getAuthentication();
@@ -28,7 +30,8 @@ public class CurrentUserService {
 
     public User getCurrentUser() {
         String username = getCurrentUsername();
-        return userService.getUserByUsername(username);
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", username));
     }
 
     public boolean isAdmin() {

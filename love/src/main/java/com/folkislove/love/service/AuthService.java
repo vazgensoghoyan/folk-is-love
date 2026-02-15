@@ -24,22 +24,18 @@ public class AuthService {
     private final JwtService jwtService;
     private final UserCredentialsValidator credentialsValidator;
 
-    public String login(AuthRequest request) {
-        User user = userRepository.findByUsername(request.getUsername())
+    public String login(String username, String password) {
+        User user = userRepository.findByUsername(username)
                     .orElseThrow(() -> new AuthorizationException("Invalid username or password"));
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+        if (!passwordEncoder.matches(password, user.getPasswordHash())) {
             throw new AuthorizationException("Invalid username or password");
         }
 
         return jwtService.generateToken(user.getUsername(), user.getRole().name());
     }
 
-    public User register(RegisterRequest request) {
-        String username = request.getUsername();
-        String email = request.getEmail();
-        String password = request.getPassword();
-
+    public User register(String username, String email, String password) {
         credentialsValidator.validateUsername(username);
         credentialsValidator.validateEmail(email);
         credentialsValidator.validatePassword(password);

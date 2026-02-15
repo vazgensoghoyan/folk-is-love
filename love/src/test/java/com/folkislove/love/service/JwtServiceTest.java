@@ -1,5 +1,6 @@
 package com.folkislove.love.service;
 
+import com.folkislove.love.exception.JwtAuthenticationException;
 import com.folkislove.love.model.User.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,7 +51,9 @@ class JwtServiceTest {
         // Ждем пока токен истечет
         Thread.sleep(200);
 
-        assertFalse(shortLivedService.isTokenValid(token, "user1"));
+        assertThrows(JwtAuthenticationException.class, () -> 
+            shortLivedService.isTokenValid(token, "user1")
+        );
     }
 
     @Test

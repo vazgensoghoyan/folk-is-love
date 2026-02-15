@@ -1,13 +1,11 @@
 package com.folkislove.love.service;
 
 import com.folkislove.love.model.User;
-import com.folkislove.love.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.List;
 
@@ -19,13 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) {
-        User user = userRepository.findByUsername(username)
-            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userService.getUserByUsername(username);
 
         return new org.springframework.security.core.userdetails.User(
             user.getUsername(),
