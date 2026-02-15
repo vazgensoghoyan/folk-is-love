@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -30,6 +31,10 @@ public class SecurityConfig {
                     auth.requestMatchers("/api/auth/**").permitAll();
                     auth.requestMatchers("/v3/api-docs/**").permitAll();
                     auth.requestMatchers("/swagger-ui/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/api/events/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/api/tags/**").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll();
                     auth.anyRequest().authenticated();
                 }
             )
