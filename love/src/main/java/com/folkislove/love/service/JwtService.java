@@ -6,6 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.folkislove.love.exception.JwtAuthenticationException;
 import com.folkislove.love.model.User.Role;
 
 import java.nio.charset.StandardCharsets;
@@ -66,11 +67,12 @@ public class JwtService {
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
+
         } catch (ExpiredJwtException e) {
-            // даже если просрочен, возвращаем его claims
-            return e.getClaims();
+            throw new JwtAuthenticationException("JWT token expired");
+            
         } catch (JwtException e) {
-            throw new RuntimeException("Invalid JWT token", e);
+            throw new JwtAuthenticationException("Invalid JWT token");
         }
     }
 }

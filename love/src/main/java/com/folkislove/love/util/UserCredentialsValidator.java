@@ -4,11 +4,15 @@ import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Component;
 
+import com.folkislove.love.exception.InvalidEmailException;
+import com.folkislove.love.exception.InvalidPasswordException;
+import com.folkislove.love.exception.InvalidUsernameException;
+
 @Component
 public class UserCredentialsValidator {
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
-            "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
+        "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
     );
 
     private static final Pattern USERNAME_PATTERN = Pattern.compile(
@@ -17,31 +21,31 @@ public class UserCredentialsValidator {
 
     public void validateUsername(String username) {
         if (username == null || username.length() < 3 || username.length() > 50) {
-            throw new RuntimeException("Username must be between 3 and 50 characters long");
+            throw new InvalidUsernameException("Username must be between 3 and 50 characters long");
         }
 
         if (!USERNAME_PATTERN.matcher(username).matches()) {
-            throw new RuntimeException("Username must be 3-50 characters: lowercase letters, digits, '_' or '-' only");
+            throw new InvalidUsernameException("Username must be 3-50 characters: lowercase letters, digits, '_' or '-' only");
         }
     }
 
     public void validateEmail(String email) {
         if (email == null || email.isBlank()) {
-            throw new RuntimeException("Email must not be empty");
+            throw new InvalidEmailException("Email must not be empty");
         }
 
         if (!EMAIL_PATTERN.matcher(email).matches()) {
-            throw new RuntimeException("Email is not valid");
+            throw new InvalidEmailException("Email is not valid");
         }
     }
 
     public void validatePassword(String password) {
         if (password == null || password.length() < 10) {
-            throw new RuntimeException("Password must be at least 10 characters long");
+            throw new InvalidPasswordException("Password must be at least 10 characters long");
         }
 
         if (password.contains(" ")) {
-            throw new RuntimeException("Password must not contain spaces");
+            throw new InvalidPasswordException("Password must not contain spaces");
         }
 
         boolean hasLower = false;
@@ -57,16 +61,16 @@ public class UserCredentialsValidator {
         }
 
         if (!hasLower) {
-            throw new RuntimeException("Password must contain at least one lowercase letter");
+            throw new InvalidPasswordException("Password must contain at least one lowercase letter");
         }
         if (!hasUpper) {
-            throw new RuntimeException("Password must contain at least one uppercase letter");
+            throw new InvalidPasswordException("Password must contain at least one uppercase letter");
         }
         if (!hasDigit) {
-            throw new RuntimeException("Password must contain at least one digit");
+            throw new InvalidPasswordException("Password must contain at least one digit");
         }
         if (!hasSpecial) {
-            throw new RuntimeException("Password must contain at least one special character");
+            throw new InvalidPasswordException("Password must contain at least one special character");
         }
     }
 }
