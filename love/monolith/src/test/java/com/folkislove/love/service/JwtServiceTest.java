@@ -2,7 +2,7 @@ package com.folkislove.love.service;
 
 import com.folkislove.love.exception.custom.JwtAuthenticationException;
 import com.folkislove.love.model.User;
-import com.folkislove.love.model.User.Role;
+import com.folkislove.common.enums.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

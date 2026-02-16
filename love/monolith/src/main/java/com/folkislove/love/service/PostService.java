@@ -3,7 +3,7 @@ package com.folkislove.love.service;
 import com.folkislove.love.model.Post;
 import com.folkislove.love.model.Tag;
 import com.folkislove.love.repository.PostRepository;
-import com.folkislove.love.dto.request.PostRequest;
+import com.folkislove.common.dto.request.PostRequest;
 import com.folkislove.love.exception.custom.ResourceNotFoundException;
 
 import lombok.AllArgsConstructor;

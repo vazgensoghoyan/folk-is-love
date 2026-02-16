@@ -1,5 +1,6 @@
 package com.folkislove.love.service;
 
+import com.folkislove.common.enums.Role;
 import com.folkislove.love.exception.custom.AccessDeniedException;
 import com.folkislove.love.exception.custom.AuthorizationException;
 import com.folkislove.love.exception.custom.ResourceNotFoundException;
@@ -36,7 +37,7 @@ public class CurrentUserService {
 
     public boolean isAdmin() {
         User user = getCurrentUser();
-        return user.getRole() == User.Role.ADMIN;
+        return user.getRole() == Role.ADMIN;
     }
 
     public boolean isOwner(String username) {

@@ -1,8 +1,8 @@
-package com.folkislove.love.dto.response;
+package com.folkislove.common.dto.response;
 
 import java.util.List;
 
-import com.folkislove.love.model.User.Role;
+import com.folkislove.common.enums.Role;
 
 import lombok.Builder;
 import lombok.Data;

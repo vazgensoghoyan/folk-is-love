@@ -1,4 +1,4 @@
-package com.folkislove.love.dto.request;
+package com.folkislove.common.dto.request;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;

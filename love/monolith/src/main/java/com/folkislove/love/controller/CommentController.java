@@ -1,6 +1,6 @@
 package com.folkislove.love.controller;
 
-import com.folkislove.love.dto.response.CommentResponse;
+import com.folkislove.common.dto.response.CommentResponse;
 import com.folkislove.love.mapper.CommentMapper;
 import com.folkislove.love.model.Comment;
 import com.folkislove.love.service.CommentService;

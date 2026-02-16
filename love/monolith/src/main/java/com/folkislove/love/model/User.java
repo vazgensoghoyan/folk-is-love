@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.folkislove.common.enums.Role;
 
 @Entity
 @Table(name = "users")
@@ -66,10 +67,5 @@ public class User {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
-    }
-
-    public enum Role {
-        USER,
-        ADMIN
     }
 }

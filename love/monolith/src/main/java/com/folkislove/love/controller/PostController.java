@@ -1,7 +1,7 @@
 package com.folkislove.love.controller;
 
-import com.folkislove.love.dto.request.PostRequest;
-import com.folkislove.love.dto.response.PostResponse;
+import com.folkislove.common.dto.request.PostRequest;
+import com.folkislove.common.dto.response.PostResponse;
 import com.folkislove.love.mapper.PostMapper;
 import com.folkislove.love.model.Post;
 import com.folkislove.love.service.CurrentUserService;

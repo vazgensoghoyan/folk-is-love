@@ -1,6 +1,6 @@
 package com.folkislove.love.mapper;
 
-import com.folkislove.love.dto.response.PostResponse;
+import com.folkislove.common.dto.response.PostResponse;
 import com.folkislove.love.model.Comment;
 import com.folkislove.love.model.Post;
 import com.folkislove.love.model.Tag;

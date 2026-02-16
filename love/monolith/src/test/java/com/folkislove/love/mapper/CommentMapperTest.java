@@ -1,6 +1,6 @@
 package com.folkislove.love.mapper;
 
-import com.folkislove.love.dto.response.CommentResponse;
+import com.folkislove.common.dto.response.CommentResponse;
 import com.folkislove.love.model.Comment;
 import com.folkislove.love.model.User;
 import org.junit.jupiter.api.Test;

@@ -1,7 +1,7 @@
 package com.folkislove.love.controller;
 
-import com.folkislove.love.dto.request.EventRequest;
-import com.folkislove.love.dto.response.EventResponse;
+import com.folkislove.common.dto.request.EventRequest;
+import com.folkislove.common.dto.response.EventResponse;
 import com.folkislove.love.mapper.EventMapper;
 import com.folkislove.love.model.Event;
 import com.folkislove.love.service.EventService;

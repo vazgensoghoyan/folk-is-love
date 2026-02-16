@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.folkislove.love.dto.response.UserResponse;
+import com.folkislove.common.dto.response.UserResponse;
 import com.folkislove.love.mapper.UserMapper;
 import com.folkislove.love.model.User;
 import com.folkislove.love.service.CurrentUserService;

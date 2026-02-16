@@ -1,5 +1,6 @@
 package com.folkislove.love.service;
 
+import com.folkislove.common.enums.Role;
 import com.folkislove.love.exception.custom.AccessDeniedException;
 import com.folkislove.love.exception.custom.AuthorizationException;
 import com.folkislove.love.exception.custom.ResourceNotFoundException;
@@ -92,7 +93,7 @@ class CurrentUserServiceTest {
 
         @Test
         void returnsUserFromRepository() {
-            User user = User.builder().username("john").role(User.Role.USER).build();
+            User user = User.builder().username("john").role(Role.USER).build();
             mockAuthAs("john");
 
             when(userRepository.findByUsername("john")).thenReturn(Optional.of(user));
@@ -119,8 +120,8 @@ class CurrentUserServiceTest {
 
         @BeforeEach
         void initUsers() {
-            admin = User.builder().username("admin").role(User.Role.ADMIN).build();
-            user = User.builder().username("user").role(User.Role.USER).build();
+            admin = User.builder().username("admin").role(Role.ADMIN).build();
+            user = User.builder().username("user").role(Role.USER).build();
         }
 
         @Test

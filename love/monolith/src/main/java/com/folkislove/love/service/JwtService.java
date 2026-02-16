@@ -6,9 +6,9 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.folkislove.common.enums.Role;
 import com.folkislove.love.exception.custom.JwtAuthenticationException;
 import com.folkislove.love.model.User;
-import com.folkislove.love.model.User.Role;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -52,7 +52,7 @@ public class JwtService {
 
     public Role extractRole(String token) {
         String role = parseClaims(token).get("role", String.class);
-        return Role.valueOf(role);
+        return com.folkislove.common.enums.Role.valueOf(role);
     }
 
     public boolean isTokenValid(String token, String username) {

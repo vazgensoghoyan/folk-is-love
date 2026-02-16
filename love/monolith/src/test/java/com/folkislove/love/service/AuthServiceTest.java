@@ -1,7 +1,7 @@
 package com.folkislove.love.service;
 
 import com.folkislove.love.model.User;
-import com.folkislove.love.model.User.Role;
+import com.folkislove.common.enums.Role;
 import com.folkislove.love.repository.UserRepository;
 import com.folkislove.love.util.UserCredentialsValidator;
 import org.junit.jupiter.api.BeforeEach;

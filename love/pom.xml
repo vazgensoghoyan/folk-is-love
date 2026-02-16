@@ -18,21 +18,12 @@
 	<packaging>pom</packaging>
 
 	<modules>
+		<module>common</module>
 		<module>monolith</module>
 	</modules>
 
 	<properties>
 		<java.version>21</java.version>
 	</properties>
-
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-parent</artifactId>
-			<version>4.1.0-M1</version>
-			<type>pom</type>
-            <scope>import</scope>
-		</dependency>
-	</dependencies>
 
 </project>

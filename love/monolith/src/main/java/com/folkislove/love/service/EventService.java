@@ -3,7 +3,7 @@ package com.folkislove.love.service;
 import com.folkislove.love.model.Event;
 import com.folkislove.love.model.Tag;
 import com.folkislove.love.repository.EventRepository;
-import com.folkislove.love.dto.request.EventRequest;
+import com.folkislove.common.dto.request.EventRequest;
 import com.folkislove.love.exception.custom.InvalidEventDateException;
 import com.folkislove.love.exception.custom.ResourceNotFoundException;
 
